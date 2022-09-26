@@ -2,7 +2,7 @@
 #include <string>
 #include <fstream>
 #include <iterator>
-#include "testScanner.h"
+//#include "testScanner.h"
 
 #include "scanner.cpp"
 using namespace std;
