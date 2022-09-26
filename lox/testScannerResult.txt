@@ -1,0 +1,52 @@
+testDeclaration()
+Test passed: var=VAR
+Test passed: a=IDENTIFIER
+Test passed: ==EQUAL
+Test passed: "Declared"=STRING
+Test passed: ;=SEMICOLON
+Test passed: a=IDENTIFIER
+Test passed: ==EQUAL
+Test passed: 4=NUMBER
+Test passed: ;=SEMICOLON
+
+
+testIfElseAndComparison()
+Test passed: if=IF
+Test passed: (=LEFT_PAREN
+Test passed: a=IDENTIFIER
+Test passed: <=LESS
+Test passed: b=IDENTIFIER
+Test passed: )=RIGHT_PAREN
+Test passed: {=LEFT_BRACE
+Test passed: print=PRINT
+Test passed: a=IDENTIFIER
+Test passed: /=SLASH
+Test passed: b=IDENTIFIER
+Test passed: ;=SEMICOLON
+Test passed: }=RIGHT_BRACE
+Test passed: else=ELSE
+Test passed: {=LEFT_BRACE
+Test passed: print=PRINT
+Test passed: a=IDENTIFIER
+Test passed: *=STAR
+Test passed: b=IDENTIFIER
+Test passed: ;=SEMICOLON
+Test passed: }=RIGHT_BRACE
+
+
+testWhileAndBool()
+Test passed: while=WHILE
+Test passed: (=LEFT_PAREN
+Test passed: true=TRUE
+Test passed: and=AND
+Test passed: false=FALSE
+Test passed: )=RIGHT_PAREN
+Test passed: {=LEFT_BRACE
+Test passed: return=RETURN
+Test passed: true=TRUE
+Test passed: or=OR
+Test passed: false=FALSE
+Test passed: ;=SEMICOLON
+Test passed: }=RIGHT_BRACE
+
+
