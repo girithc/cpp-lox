@@ -62,20 +62,20 @@ class Parser {
         return false;
     }
 
-    Expr equality()
+    string equality()
     {
-        Expr expr = comparison();
+        string expr = comparison();
 
         while(match(BANG_EQUAL, EQUAL_EQUAL))
         {
             Token operator = previous();
-            Expr right = comparison();
-            Expr tempExpr(expr, operator, right);
+            string right = comparison();
+            string tempExpr(expr, operator, right);
             right = tempExpr.binary();
         }
     }
 
-    Expr expression()
+    string expression()
     {
         return equality();
     }

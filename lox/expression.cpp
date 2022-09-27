@@ -3,32 +3,24 @@
 
 using namespace std;
 
-class Expr()
+struct exprNode
 {
-    private:
+    string value;
+    exprNode *left;
+    exprNode *right;
+};
 
-    Expr* leftExpr;
-    Expr* rightExpr;
-    Token operator;
+class ExprTree()
+{
+    exprNode *head;
 
-    public:
-
-    void Expr()
+    void ExprTree()
     {
-
+        head = NULL;
     }
 
-    void Expr(Expr left, Token op, Expr right)
+    void insert(string v, exprNode* e)
     {
-        *leftExpr = left;
-        operator = op;
-        *rightExpr = right;
+        
     }
-
-    Expr binary()
-    {
-        Expr* result;
-
-        return *result;
-    }
-}
+};
