@@ -1,26 +1,37 @@
-#include "token.cpp"
-#include <string>
+
+#include <string.h>
 
 using namespace std;
 
-struct exprNode
+
+class ExprNode
 {
-    string value;
-    exprNode *left;
-    exprNode *right;
+    public:
+
+        string value;
+        ExprNode *left;
+        ExprNode *right;
+
+        ExprNode()
+        {
+            left = nullptr;
+            right = nullptr;
+        }
+
+        ExprNode(string v)
+        {
+            value = v;
+            left = nullptr;
+            right = nullptr;
+        }
+
+        ExprNode(ExprNode *l, string m, ExprNode* r)
+        {
+            value = m;
+            left = l;
+            right = r;
+        }
 };
 
-class ExprTree()
-{
-    exprNode *head;
 
-    void ExprTree()
-    {
-        head = NULL;
-    }
 
-    void insert(string v, exprNode* e)
-    {
-        
-    }
-};
