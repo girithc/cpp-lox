@@ -2,59 +2,38 @@
 #include <string>
 #include <sstream>
 
-class AstPrinter : public Visitor<string>
+
+class AstPrinter : public Visitor
 {
     public:
-    string parenthesize(string name, list<Expr> exprs)
+    
+
+    void print(Expr* expr)
+    {   expr->Accept(this);}
+
+    void VisitBinaryExpr(Binary* expr) override
     {
-        stringstream ss;
-        ss <<"(" ;
-        ss << name;
-
-        list<Expr>::iterator i;
-        for (i = exprs.begin(); i != exprs.end(); i++)
-        {
-            ss << " ";
-            ss << i->sudo_accept(this);
-        }
-
-        ss << ")";
-
-        return ss.str();
+        list<Expr*> exprs;
+        exprs.push_back(expr->left);
+        exprs.push_back(expr->right);
     }
 
-    string print(Expr expr)
+    void VisitGroupingExpr(Grouping* expr) override
     {
-        return expr.sudo_accept(this);
+        list<Expr*> exprs;
+        exprs.push_back(expr->expression);
     }
 
-    string VisitBinaryExpr(Binary expr) override
+    void VisitLiteralExpr(Literal* expr) override
     {
-        list<Expr> exprs;
-        exprs.push_back(expr.left);
-        exprs.push_back(expr.right);
-        return parenthesize(expr.op.tokenLiteral(), 
-                            exprs);
+        //if (expr->value == "NIL") return "NIL";
+        cout << expr->value << endl;
     }
 
-    string VisitGroupingExpr(Grouping expr) override
+    void VisitUnaryExpr(Unary* expr) override
     {
-        list<Expr> exprs;
-        exprs.push_back(expr.expression);
-        return parenthesize("group", exprs);
-    }
-
-    string VisitLiteralExpr(Literal expr) override
-    {
-        if (expr.value == "NIL") return "NIL";
-        return expr.value;
-    }
-
-    string VisitUnaryExpr(Unary expr) override
-    {
-        list<Expr> exprs;
-        exprs.push_back(expr.right);
-        return parenthesize(expr.op.tokenLiteral(), exprs);
+        list<Expr*> exprs;
+        exprs.push_back(expr->right);
     }
 
 };
@@ -62,13 +41,20 @@ class AstPrinter : public Visitor<string>
 
 int main()
 {
-    Expr expression = new Binary(
-        new Unary(
-            new Token(MINUS, "-", NULL, 1),
-            new Literal(123)),
-        new Token(STAR, "*", NULL, 1),
-        new Grouping(
-            new Literal(45.67)));
+    Token a(MINUS, "-", "", 1);
+    Token b(STAR, "*", "", 1);
 
-    cout << new AstPrinter().print(expression) << endl;
+    
+    Unary* u = new Unary(a, new Literal("123"));
+    Grouping* g = new Grouping(new Literal("45"));
+    
+    Expr* expression = new Binary(u,b,g);
+
+    //cout << new AstPrinter<string>().print(expression) << endl;
+
+    AstPrinter AstPrt;
+
+
+    cout << "Done building" << endl;
+    AstPrt.print(expression);
 }

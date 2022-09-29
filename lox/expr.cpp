@@ -6,187 +6,181 @@
 
 using namespace std;
 
-class Expr;
-template<typename R> 
-class Visitor;
 
+class Visitor;
 class Expr 
 {
     public:
-        Expr(){}
-        template <typename R> R sudo_accept(Visitor<R> *visitor);
-        //{accept(visitor);}
+        virtual ~Expr(){};
+        virtual void Accept(Visitor *visitor){};
+        //{accept(visitor);}s
         //virtual void accept(Visitor<R> *visitor);
 };
+class Assign;
+class Binary;
+class Call;
+class Get;
+class Grouping;
+class Literal;
+class Logical;
+class Set;
+class Super;
+class This;
+class Unary;
+class Variable;
 
-/*
-class Assign : public Expr;
-class Binary : public Expr;
-class Call : public Expr;
-class Get : public Expr;
-class Grouping : public Expr;
-class Literal : public Expr;
-class Logical : public Expr;
-class Set : public Expr;
-class Super : public Expr;
-class This : public Expr;
-class Unary : public Expr;
-class Variable : public Expr;
-*/
+class Visitor : public Expr
+{
+    public:
+        ~Visitor() {}
+        virtual void VisitAssignExpr(Assign *expr) {};
+        virtual void VisitBinaryExpr(Binary *expr) {};
+        virtual void VisitCallExpr(Call *expr){}; ;
+        virtual void VisitGetExpr(Get *expr) {};;
+        virtual void VisitGroupingExpr(Grouping *xpr) {};
+        virtual void VisitLiteralExpr(Literal *expr) {};
+        virtual void VisitLogicalExpr(Logical *expr) {};
+        virtual void VisitSetExpr(Set *expr) {};
+        virtual void VisitSuperExpr(Super *expr) {};
+        virtual void VisitThisExpr(This *expr) {};
+        virtual void VisitUnaryExpr(Unary *expr) {};
+        virtual void VisitVariableExpr(Variable *expr) {};
+};
+
+
+
 
 class Assign : public Expr
 {
     public:
         Token name;
-        Expr value;
+        Expr* value;
 
-        Assign(Token n, Expr v)
+        Assign(Token n, Expr* v)
         {
             name = n;
             value = v;
         }
 
-        template <typename R> R sudo_accept(Visitor<R> *visitor) override        
-        {
-          return visitor->VisitAssignExpr(this);
+        void Accept(Visitor *visitor)        
+        {   visitor->VisitAssignExpr(this);
         }
 };
+
 
 class Binary : public Expr
 {
     public:
-        Expr left;
+        Expr* left;
         Token op;
-        Expr right;
+        Expr* right;
 
-        Binary(Expr l, Token op, Expr r)
-        {
-            left = l;
+        Binary(Expr* l, Token o, Expr* r)
+        {   left = l;
             right = r;
-            this->op = op;
+            op = o;
         }
 
-        template <typename R> R sudo_accept(Visitor<R> *visitor) override        
-        {
-            return visitor->VisitBinaryExpr(this);
+        void Accept(Visitor *visitor)       
+        {   visitor->VisitBinaryExpr(this);
         }
 };
+
 
 class Call : public Expr
 {
     public:
-        Expr callee;
+        Expr* callee;
         Token paren;
-        list<Expr> arguments;
+        list<Expr*> arguments;
 
-        Call(Expr c, Token p, list<Expr> as)
-        {
-            callee = c;
+        Call(Expr* c, Token p, list<Expr*> as)
+        {   callee = c;
             this->paren = p;
             arguments = as;
         }
 
-        template <typename R> R sudo_accept(Visitor<R> *visitor) override        
-        {
-            return visitor->VisitCallExpr(this);
+        void Accept(Visitor *visitor)       
+        {   visitor->VisitCallExpr(this);
         }
 
 };
+
 
 class Get : public Expr
 {
     public:
-        Expr object;
+        Expr* object;
         Token name;
 
-        Get(Expr o, Token n)
-        {
-            object = o;
+        Get(Expr* o, Token n)
+        {   object = o;
             name = n;
         }
 
-        template <typename R> R sudo_accept(Visitor<R> *visitor) override        
-        {
-            return visitor->VisitGetExpr(this);
-        }
+        void Accept(Visitor *visitor)        
+        {   visitor->VisitGetExpr(this);}
 
 };
+
 
 class Grouping : public Expr
 {
     public:
-        Expr expression;
-
-        Grouping(Expr e)
-        {
-            expression = e;
-        }
-
-        template <typename R> R sudo_accept(Visitor<R> *visitor) override        
-        {
-            return visitor->VisitGroupingExpr(this);
-        }
-
+        Expr* expression;
+        Grouping(Expr* e){   expression = e;}
+        void Accept(Visitor *visitor)        
+        {   visitor->VisitGroupingExpr(this);}
 };
+
 
 class Literal : public Expr
 {
     public:
         string value;
-
         Literal(string v)
-        {
-            value = v;
-        }
-
-        template <typename R> R sudo_accept(Visitor<R> *visitor) override        
-        {
-            return visitor->VisitLiteralExpr(this);
-        }
-
+        {   value = v;}
+        void Accept(Visitor *visitor)       
+        {   visitor->VisitLiteralExpr(this);}
 };
+
 
 class Logical : public Expr
 {
     public:
-        Expr left;
+        Expr* left;
         Token op;
-        Expr right;
+        Expr* right;
 
-        Logical(Expr l, Token op, Expr r)
-        {
-            left = l;
+        Logical(Expr* l, Token op, Expr* r)
+        {   left = l;
             this->op = op;
             right = r;
         }
 
-        template <typename R> R sudo_accept(Visitor<R> *visitor) override        
-        {
-            return visitor->VisitLogicalExpr(this);
-        }
+        void Accept(Visitor *visitor)       
+        {   visitor->VisitLogicalExpr(this);}
 
 };
 
 class Set : public Expr
 {
     public:
-        Expr object;
+        Expr* object;
         Token name;
-        Expr value;
+        Expr* value;
 
-        Set(Expr o, Token n, Expr v)
-        {
-            object = o;
+        Set(Expr* o, Token n, Expr* v)
+        {   object = o;
             name = n;
             value = v;
         }
 
-        template <typename R> R sudo_accept(Visitor<R> *visitor) override
-        {
-            return visitor->VisitSetExpr(this);
-        }
+        void Accept(Visitor *visitor)
+        {   return visitor->VisitSetExpr(this);}
 
 };
+
 
 class Super : public Expr
 {
@@ -195,17 +189,15 @@ class Super : public Expr
         Token method;
 
         Super(Token k, Token m)
-        {
-            keyword = k;
+        {   keyword = k;
             method = m;
         }
 
-        template <typename R> R sudo_accept(Visitor<R> *visitor) override        
-        {
-            return visitor->VisitSuperExpr(this);
-        }
+        void Accept(Visitor *visitor)       
+        {   visitor->VisitSuperExpr(this);}
 
 };
+
 
 class This : public Expr
 {
@@ -213,35 +205,29 @@ class This : public Expr
         Token keyword;
 
         This(Token k)
-        {
-            keyword = k;
-        }
+        {   keyword = k;}
 
-        template <typename R> R sudo_accept(Visitor<R> *visitor) override        
-        {
-            return visitor->VisitThisExpr(this);
-        }
+        void Accept(Visitor *visitor)        
+        {   return visitor->VisitThisExpr(this);}
 
 };
+
 
 class Unary : public Expr
 {
     public:
         Token op;
-        Expr right;
+        Expr* right;
 
-        Unary(Token o, Expr r)
-        {
-            op = o;
-            right = r;
-        }
+        Unary(Token o, Expr* r)
+        {   op = o;
+            right = r;}
 
-        template <typename R> R sudo_accept(Visitor<R> *visitor) override        
-        {
-            return visitor->VisitUnaryExpr(this);
-        }
+        void Accept(Visitor *visitor)        
+        {   visitor->VisitUnaryExpr(this);}
 
 };
+
 
 class Variable : public Expr
 {
@@ -249,35 +235,14 @@ class Variable : public Expr
         Token name;
 
         Variable(Token n)
-        {
-            name = n;
-        }
+        {   name = n;}
 
-        template <typename R> R sudo_accept(Visitor<R> *visitor) override        
-        {
-            return visitor->VisitVariableExpr(this);
-        }
+        void Accept(Visitor *visitor)      
+        {   visitor->VisitVariableExpr(this);}
 
 };
 
 
 
 
-template<typename R> 
-class Visitor : public Expr
-{
-    public:
-        ~Visitor() {}
-        virtual R VisitAssignExpr(Assign *expr) = 0;
-        virtual R VisitBinaryExpr(Binary *expr) = 0;
-        virtual R VisitCallExpr(Call *expr) = 0;
-        virtual R VisitGetExpr(Get *expr) = 0;
-        virtual R VisitGroupingExpr(Grouping *xpr) = 0;
-        virtual R VisitLiteralExpr(Literal *expr) = 0;
-        virtual R VisitLogicalExpr(Logical *expr) = 0;
-        virtual R VisitSetExpr(Set *expr) = 0;
-        virtual R VisitSuperExpr(Super *expr) = 0;
-        virtual R VisitThisExpr(This *expr) = 0;
-        virtual R VisitUnaryExpr(Unary *expr) = 0;
-        virtual R VisitVariableExpr(Variable *expr) = 0;
-};
+
