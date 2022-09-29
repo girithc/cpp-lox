@@ -20,7 +20,7 @@ class Unary : public Expr;
 class Variable : public Expr;
 
 template<typename R> 
-class Visitor
+class Visitor : public Expr
 {
     public:
         ~Visitor() {}
