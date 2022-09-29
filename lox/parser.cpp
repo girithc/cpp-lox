@@ -1,4 +1,4 @@
-#include "token.cpp"
+
 #include "expr.cpp"
 
 #include <string>
@@ -184,7 +184,7 @@ Parser::primary()
     if(match(t1)) return new Literal("FALSE");
 
     t2.push_back(TRUE);
-    if(match(t2)) return new Literal("FALSE");
+    if(match(t2)) return new Literal("TRUE");
 
     t3.push_back(NIL);
     if(match(t3)) return new Literal("NIL");

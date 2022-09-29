@@ -18,6 +18,13 @@ class Token {
 
     public:
 
+    Token()
+    {
+        this->lexeme = "";
+        this->literal = "";
+        line = 0;
+    }
+
 
     Token(TokenType ttype, string lexeme, string literal, int line)
     {

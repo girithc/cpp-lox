@@ -1,11 +1,25 @@
 
 #include "token.cpp"
+#include <iostream>
 #include <list>
 #include <string.h>
 
 using namespace std;
 
 class Expr;
+template<typename R> 
+class Visitor;
+
+class Expr 
+{
+    public:
+        Expr(){}
+        template <typename R> R sudo_accept(Visitor<R> *visitor);
+        //{accept(visitor);}
+        //virtual void accept(Visitor<R> *visitor);
+};
+
+/*
 class Assign : public Expr;
 class Binary : public Expr;
 class Call : public Expr;
@@ -18,36 +32,7 @@ class Super : public Expr;
 class This : public Expr;
 class Unary : public Expr;
 class Variable : public Expr;
-
-template<typename R> 
-class Visitor : public Expr
-{
-    public:
-        ~Visitor() {}
-        virtual R VisitAssignExpr(Assign *expr) = 0;
-        virtual R VisitBinaryExpr(Binary *expr) = 0;
-        virtual R VisitCallExpr(Call *expr) = 0;
-        virtual R VisitGetExpr(Get *expr) = 0;
-        virtual R VisitGroupingExpr(Grouping *xpr) = 0;
-        virtual R VisitLiteralExpr(Literal *expr) = 0;
-        virtual R VisitLogicalExpr(Logical *expr) = 0;
-        virtual R VisitSetExpr(Set *expr) = 0;
-        virtual R VisitSuperExpr(Super *expr) = 0;
-        virtual R VisitThisExpr(This *expr) = 0;
-        virtual R VisitUnaryExpr(Unary *expr) = 0;
-        virtual R VisitVariableExpr(Variable *expr) = 0;
-};
-
-
-class Expr 
-{
-    public:
-        virtual ~Expr(){}
-        template <typename R> R sudo_accept(Visitor<R> *visitor){}
-        //{accept(visitor);}
-        template <typename R> virtual void accept(Visitor<R> *visitor);
-};
-
+*/
 
 class Assign : public Expr
 {
@@ -71,14 +56,14 @@ class Binary : public Expr
 {
     public:
         Expr left;
-        Token operator;
+        Token op;
         Expr right;
 
         Binary(Expr l, Token op, Expr r)
         {
             left = l;
             right = r;
-            operator = op;
+            this->op = op;
         }
 
         template <typename R> R sudo_accept(Visitor<R> *visitor) override        
@@ -97,7 +82,7 @@ class Call : public Expr
         Call(Expr c, Token p, list<Expr> as)
         {
             callee = c;
-            paren = p;
+            this->paren = p;
             arguments = as;
         }
 
@@ -116,8 +101,8 @@ class Get : public Expr
 
         Get(Expr o, Token n)
         {
-            object = 0;
-            name = m;
+            object = o;
+            name = n;
         }
 
         template <typename R> R sudo_accept(Visitor<R> *visitor) override        
@@ -165,13 +150,13 @@ class Logical : public Expr
 {
     public:
         Expr left;
-        Token operator;
+        Token op;
         Expr right;
 
         Logical(Expr l, Token op, Expr r)
         {
             left = l;
-            operator = op;
+            this->op = op;
             right = r;
         }
 
@@ -242,12 +227,12 @@ class This : public Expr
 class Unary : public Expr
 {
     public:
-        Token operator;
+        Token op;
         Expr right;
 
         Unary(Token o, Expr r)
         {
-            operator = o;
+            op = o;
             right = r;
         }
 
@@ -273,4 +258,26 @@ class Variable : public Expr
             return visitor->VisitVariableExpr(this);
         }
 
+};
+
+
+
+
+template<typename R> 
+class Visitor : public Expr
+{
+    public:
+        ~Visitor() {}
+        virtual R VisitAssignExpr(Assign *expr) = 0;
+        virtual R VisitBinaryExpr(Binary *expr) = 0;
+        virtual R VisitCallExpr(Call *expr) = 0;
+        virtual R VisitGetExpr(Get *expr) = 0;
+        virtual R VisitGroupingExpr(Grouping *xpr) = 0;
+        virtual R VisitLiteralExpr(Literal *expr) = 0;
+        virtual R VisitLogicalExpr(Logical *expr) = 0;
+        virtual R VisitSetExpr(Set *expr) = 0;
+        virtual R VisitSuperExpr(Super *expr) = 0;
+        virtual R VisitThisExpr(This *expr) = 0;
+        virtual R VisitUnaryExpr(Unary *expr) = 0;
+        virtual R VisitVariableExpr(Variable *expr) = 0;
 };
