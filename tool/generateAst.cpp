@@ -24,6 +24,12 @@ class GenerateAst
         return res;
     }
 
+    void defineVisitor(ofstream& writeFile, string baseName
+                        list<string> types)
+    {
+
+    }
+
     void defineType(ofstream& writeFile,  string baseName, 
                     string className, string fieldList)
     {
@@ -79,6 +85,9 @@ class GenerateAst
             //cout << className << "//" << fields << endl;
         }
 
+
+        defineVisitor(writeFile, baseName, types);
+
         writeFile << "}" << endl;
 
     }
@@ -99,7 +108,7 @@ class GenerateAst
         typeOfExpression.push_back("Grouping :Expr expression");
         typeOfExpression.push_back("Binary   :Expr left,Token operator,Expr right");
         
-        defineAst(outputDir, "Expr", typeOfExpression, );
+        defineAst(outputDir, "Expr", typeOfExpression);
         }
 };
 

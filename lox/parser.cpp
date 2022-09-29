@@ -1,5 +1,5 @@
 #include "token.cpp"
-#include "expression.cpp"
+#include "expr.cpp"
 
 #include <string>
 #include <iterator>
@@ -37,13 +37,13 @@ class Parser{
     bool match(list<TokenType> types);
 
     //parsing expression
-    string equality();
-    string expression();
-    string comparison();
-    string term();
-    string factor();
-    string unary();
-    string primary();
+    Expr equality();
+    Expr expression();
+    Expr comparison();
+    Expr term();
+    Expr factor();
+    Expr unary();
+    Expr primary();
 
     //panic mode
     Token consume(TokenType t, string message);
@@ -56,16 +56,16 @@ Parser::Parser(list<Token> t)
     tokens = t;
 }
 
-string 
+Expr 
 Parser::expression()
 {
     return equality();
 }
 
-string 
+Expr 
 Parser::equality()
 {
-    string e = comparison();
+    Expr expr = comparison();
     
     list<TokenType> tt;
     tt.push_back(BANG_EQUAL);
@@ -74,20 +74,21 @@ Parser::equality()
     while(match(tt))
     {
         Token op = previous();
-        string r = comparison();
+        Expr r = comparison();
         
-        string temp = e;
-        e = "";
-        e.append(temp + "," + op.tokenLiteral() + "," + r);
+        expr = new Binary(expr, op, r);
+        //string temp = e;
+        //e = "";
+        //e.append(temp + "," + op.tokenLiteral() + "," + r);
     }
     
-    return e;
+    return expr;
 }
 
-string 
+Expr 
 Parser::comparison()
 {
-    string c = term();
+    Expr expr = term();
     
     list<TokenType> tt;
     tt.push_back(GREATER);
@@ -98,20 +99,21 @@ Parser::comparison()
     while(match(tt))
     {
         Token op = previous();
-        string r = term();
+        Expr r = term();
         
-        string temp = c;
-        c = "";
-        c.append(temp + "," + op.tokenLiteral() + "," + r);
+        expr = new Binary(expr, op, r);
+        //string temp = c;
+        //c = "";
+        //c.append(temp + "," + op.tokenLiteral() + "," + r);
     }
     
-    return c;
+    return expr;
 }
 
-string 
+Expr 
 Parser::term()
 {
-    string t = factor();
+    Expr expr = factor();
     
     list<TokenType> tt;
     tt.push_back(MINUS);
@@ -120,20 +122,21 @@ Parser::term()
     while(match(tt))
     {
         Token op = previous();
-        string r = factor();
+        Expr r = factor();
         
-        string temp = t;
-        t = "";
-        t.append(temp + "," + op.tokenLiteral() + "," + r);
+        expr = new Binary(expr, op, r);
+        //string temp = t;
+        //t = "";
+        //t.append(temp + "," + op.tokenLiteral() + "," + r);
     }
     
-    return t;
+    return expr;
 }
 
-string
+Expr
 Parser::factor()
 {
-    string f = unary();
+    Expr expr = unary();
     
     list<TokenType> tt;
     tt.push_back(SLASH);
@@ -142,17 +145,18 @@ Parser::factor()
     while(match(tt))
     {
         Token op = previous();
-        string r = unary();
+        Expr r = unary();
         
-        string temp = f;
-        f = "";
-        f.append(temp + "," + op.tokenLiteral() + "," + r);
+        expr = new Binary(expr, op, r);
+        //string temp = f;
+        //f = "";
+        //f.append(temp + "," + op.tokenLiteral() + "," + r);
     }
     
-    return f;
+    return expr;
 }
 
-string
+Expr
 Parser::unary()
 {
     list<TokenType> tt;
@@ -162,9 +166,10 @@ Parser::unary()
     while(match(tt))
     {
         Token op = previous();
-        string r = unary();
+        Expr r = unary();
         
-        return (op.tokenLiteral() + "," + r);
+        return new Unary(op, r);
+        // return (op.tokenLiteral() + "," + r);
     }
     
     return primary();
@@ -176,25 +181,25 @@ Parser::primary()
     list<TokenType> t1, t2, t3, t4;
 
     t1.push_back(FALSE);
-    if(match(t1)) return "FALSE";
+    if(match(t1)) return new Literal("FALSE");
 
     t2.push_back(TRUE);
-    if(match(t2)) return "TRUE";
+    if(match(t2)) return new Literal("FALSE");
 
     t3.push_back(NIL);
-    if(match(t3)) return "NIL";
+    if(match(t3)) return new Literal("NIL");
 
     list<TokenType> tt;
     tt.push_back(NUMBER);
     tt.push_back(STRING);
-    if(match(tt)) return previous().tokenLiteral();
+    if(match(tt)) return new Literal(previous().tokenLiteral());
 
     t4.push_back(LEFT_PAREN);
     if(match(t4))
     {
-        string p = expression();
+        Expr expr = expression();
         consume(RIGHT_PAREN, "Expect ')' after expression" );
-        return p;
+        return new Grouping(expr);
     }
 
     throw error(peek(), "Expect expression");
