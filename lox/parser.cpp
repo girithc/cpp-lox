@@ -37,13 +37,13 @@ class Parser{
     bool match(list<TokenType> types);
 
     //parsing expression
-    Expr equality();
-    Expr expression();
-    Expr comparison();
-    Expr term();
-    Expr factor();
-    Expr unary();
-    Expr primary();
+    Expr* equality();
+    Expr* expression();
+    Expr* comparison();
+    Expr* term();
+    Expr* factor();
+    Expr* unary();
+    Expr* primary();
 
     //panic mode
     Token consume(TokenType t, string message);
@@ -56,16 +56,16 @@ Parser::Parser(list<Token> t)
     tokens = t;
 }
 
-Expr 
+Expr* 
 Parser::expression()
 {
     return equality();
 }
 
-Expr 
+Expr* 
 Parser::equality()
 {
-    Expr expr = comparison();
+    Expr* expr = comparison();
     
     list<TokenType> tt;
     tt.push_back(BANG_EQUAL);
@@ -74,7 +74,7 @@ Parser::equality()
     while(match(tt))
     {
         Token op = previous();
-        Expr r = comparison();
+        Expr* r = comparison();
         
         expr = new Binary(expr, op, r);
         //string temp = e;
@@ -85,10 +85,10 @@ Parser::equality()
     return expr;
 }
 
-Expr 
+Expr* 
 Parser::comparison()
 {
-    Expr expr = term();
+    Expr* expr = term();
     
     list<TokenType> tt;
     tt.push_back(GREATER);
@@ -99,7 +99,7 @@ Parser::comparison()
     while(match(tt))
     {
         Token op = previous();
-        Expr r = term();
+        Expr* r = term();
         
         expr = new Binary(expr, op, r);
         //string temp = c;
@@ -110,10 +110,10 @@ Parser::comparison()
     return expr;
 }
 
-Expr 
+Expr* 
 Parser::term()
 {
-    Expr expr = factor();
+    Expr* expr = factor();
     
     list<TokenType> tt;
     tt.push_back(MINUS);
@@ -122,7 +122,7 @@ Parser::term()
     while(match(tt))
     {
         Token op = previous();
-        Expr r = factor();
+        Expr* r = factor();
         
         expr = new Binary(expr, op, r);
         //string temp = t;
@@ -133,10 +133,10 @@ Parser::term()
     return expr;
 }
 
-Expr
+Expr*
 Parser::factor()
 {
-    Expr expr = unary();
+    Expr* expr = unary();
     
     list<TokenType> tt;
     tt.push_back(SLASH);
@@ -145,7 +145,7 @@ Parser::factor()
     while(match(tt))
     {
         Token op = previous();
-        Expr r = unary();
+        Expr* r = unary();
         
         expr = new Binary(expr, op, r);
         //string temp = f;
@@ -156,7 +156,7 @@ Parser::factor()
     return expr;
 }
 
-Expr
+Expr*
 Parser::unary()
 {
     list<TokenType> tt;
@@ -166,7 +166,7 @@ Parser::unary()
     while(match(tt))
     {
         Token op = previous();
-        Expr r = unary();
+        Expr* r = unary();
         
         return new Unary(op, r);
         // return (op.tokenLiteral() + "," + r);
@@ -175,7 +175,7 @@ Parser::unary()
     return primary();
 }
 
-string
+Expr*
 Parser::primary()
 {
     list<TokenType> t1, t2, t3, t4;
@@ -197,7 +197,7 @@ Parser::primary()
     t4.push_back(LEFT_PAREN);
     if(match(t4))
     {
-        Expr expr = expression();
+        Expr* expr = expression();
         consume(RIGHT_PAREN, "Expect ')' after expression" );
         return new Grouping(expr);
     }
@@ -255,6 +255,8 @@ Parser::peek()
         }
         tokenIndexCounter += 1;
     }
+
+    return Token();
 }
 
 Token 
@@ -271,6 +273,8 @@ Parser::previous()
         }
         tokenIndexCounter += 1;
     }
+
+    return Token();
 }
 
 
@@ -317,11 +321,4 @@ Parser::synchronize() {
 
 
 //test
-int main()
-{
-    cout << "Hello World";
-    string a = enum_str[BANG_EQUAL];
-    
-    
-    cout <<endl << a;
-}
+

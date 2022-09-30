@@ -3,8 +3,8 @@
 #include <fstream>
 #include <iterator>
 //#include "testScanner.h"
-
 #include "scanner.cpp"
+
 using namespace std;
 
 
@@ -78,6 +78,10 @@ class Lox
 
                 tokenCounter++;
             }
+
+            Parser parser(tokens);
+
+            cout << "Parser ended" << endl;
             exit(1);
         }
 
@@ -99,7 +103,7 @@ class Lox
         Lox lox;
         if (argc == 2 && strcmp(argv[1],"test")==0)
         {
-            testScanner();
+            //testScanner();
         } 
         else if (argc > 2)
         {
