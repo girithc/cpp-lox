@@ -9,31 +9,41 @@ class AstPrinter : public Visitor
     
 
     void print(Expr* expr)
-    {   expr->Accept(this);}
+    {   cout << "Entered print" << endl;
+        expr->Accept(this);}
 
     void VisitBinaryExpr(Binary* expr) override
     {
-        list<Expr*> exprs;
-        exprs.push_back(expr->left);
-        exprs.push_back(expr->right);
+        cout << "( ";
+        cout << expr->op.tokenLiteral();
+        expr->left->Accept(this);
+        expr->right->Accept(this);
+        cout << " )";
+        //expr->Accept(this);
     }
 
     void VisitGroupingExpr(Grouping* expr) override
     {
-        list<Expr*> exprs;
-        exprs.push_back(expr->expression);
+        //cout << "Entered visitG" << endl;
+        cout << "( ";
+        cout << "Group ";
+        expr->expression->Accept(this);
+        cout << " )";
     }
 
     void VisitLiteralExpr(Literal* expr) override
     {
         //if (expr->value == "NIL") return "NIL";
-        cout << expr->value << endl;
+        
+        cout << expr->value;
     }
 
     void VisitUnaryExpr(Unary* expr) override
     {
-        list<Expr*> exprs;
-        exprs.push_back(expr->right);
+        cout << "( ";
+        cout << expr->op.tokenLiteral();
+        expr->right->Accept(this);
+        cout << " )";
     }
 
 };
@@ -51,10 +61,7 @@ int main()
     Expr* expression = new Binary(u,b,g);
 
     //cout << new AstPrinter<string>().print(expression) << endl;
-
     AstPrinter AstPrt;
-
-
     cout << "Done building" << endl;
     AstPrt.print(expression);
 }
