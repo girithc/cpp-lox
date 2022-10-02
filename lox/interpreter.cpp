@@ -4,27 +4,54 @@
 class Interpreter : public Visiter
 {
     public:
-        void visitLiteralExpr(Literal *expr) override
+        string visitLiteralExpr(Literal *expr) override
         {
-            cout << "Expr.value: " << expr->value << endl;
+            //cout << "Expr.value: " << expr->value << endl;
+            return expr->value;
         }
 
-        void visitGroupingExpr(Grouping *expr)
+        string visitGroupingExpr(Grouping *expr)
         {
-            evaluate(expr->expression);
+            return eval(expr->expression);
         }
 
-        void visitUnaryExpr(Unary *expr)
+        string visitUnaryExpr(Unary *expr)
         {
-            evaluate(expr->right);
+            string r = eval(expr->right);
 
-            if (expr->op.tokenType() == "MINUS")
-            else if (expr->op.tokenType() == "BANG")       
+            if (expr->op.tokenType() == "MINUS") return -(double)r;
+            else if (expr->op.tokenType() == "BANG") return True(r);
+
+
+            return "";      
+        }
+
+        string visitBinaryExpr(Binary *expr)
+        {
+            string l = eval(expr->left);
+            string r = eval(expr->right);
+
+            if(expr->op.tokenType() == "MINUS") return (string)((double)l - (double)r);
+            else if(expr->op.tokenType() == "SLASH"){  return (string)((double)l / (double)r);}
+            else if(expr->op.tokenType() == "STAR"){  return (string)((double)l * (double)r);}
+            else if(expr->op.tokenType() == "PLUS"){
+                if(isDouble(l,r)) return (string)((double)l + (double)r);
+                else if(isString(l,r)) return l.append(r);
+            }  
+            return "";
         }
 
     private:
-        void evaluate(Expr *expr)
+        string eval(Expr *expr)
         {
-            expr->Accept(this);
+            return expr->Accept(this);
+        }
+
+        bool True(string s)
+        {
+            if (s == "") return false;
+            if (s == "true" || s == "false") return (bool)s;
+            return true;
+
         }
 };

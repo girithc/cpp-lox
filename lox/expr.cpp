@@ -12,7 +12,7 @@ class Expr
 {
     public:
         virtual ~Expr(){};
-        virtual void Accept(Visitor *visitor){};
+        virtual string Accept(Visitor *visitor){return "";};
         //{accept(visitor);}s
         //virtual void accept(Visitor<R> *visitor);
 };
@@ -33,18 +33,18 @@ class Visitor : public Expr
 {
     public:
         ~Visitor() {}
-        virtual void VisitAssignExpr(Assign *expr) {};
-        virtual void VisitBinaryExpr(Binary *expr) {};
-        virtual void VisitCallExpr(Call *expr){}; ;
-        virtual void VisitGetExpr(Get *expr) {};;
-        virtual void VisitGroupingExpr(Grouping *xpr) {};
-        virtual void VisitLiteralExpr(Literal *expr) {};
-        virtual void VisitLogicalExpr(Logical *expr) {};
-        virtual void VisitSetExpr(Set *expr) {};
-        virtual void VisitSuperExpr(Super *expr) {};
-        virtual void VisitThisExpr(This *expr) {};
-        virtual void VisitUnaryExpr(Unary *expr) {};
-        virtual void VisitVariableExpr(Variable *expr) {};
+        virtual string VisitAssignExpr(Assign *expr) {return "";};
+        virtual string VisitBinaryExpr(Binary *expr) {return "";};
+        virtual string VisitCallExpr(Call *expr){return "";} ;
+        virtual string VisitGetExpr(Get *expr) {return "";};
+        virtual string VisitGroupingExpr(Grouping *xpr) {return "";};
+        virtual string VisitLiteralExpr(Literal *expr) {return "";};
+        virtual string VisitLogicalExpr(Logical *expr) {return "";};
+        virtual string VisitSetExpr(Set *expr) {return "";};
+        virtual string VisitSuperExpr(Super *expr) {return "";};
+        virtual string VisitThisExpr(This *expr) {return "";};
+        virtual string VisitUnaryExpr(Unary *expr) {return "";};
+        virtual string VisitVariableExpr(Variable *expr) {return "";};
 };
 
 
@@ -62,8 +62,8 @@ class Assign : public Expr
             value = v;
         }
 
-        void Accept(Visitor *visitor)        
-        {   visitor->VisitAssignExpr(this);
+        string Accept(Visitor *visitor)        
+        {   return visitor->VisitAssignExpr(this);
         }
 };
 
@@ -81,8 +81,8 @@ class Binary : public Expr
             op = o;
         }
 
-        void Accept(Visitor *visitor)       
-        {   visitor->VisitBinaryExpr(this);
+        string Accept(Visitor *visitor)       
+        {   return visitor->VisitBinaryExpr(this);
         }
 };
 
@@ -100,8 +100,8 @@ class Call : public Expr
             arguments = as;
         }
 
-        void Accept(Visitor *visitor)       
-        {   visitor->VisitCallExpr(this);
+        string Accept(Visitor *visitor)       
+        {   return visitor->VisitCallExpr(this);
         }
 
 };
@@ -118,8 +118,8 @@ class Get : public Expr
             name = n;
         }
 
-        void Accept(Visitor *visitor)        
-        {   visitor->VisitGetExpr(this);}
+        string Accept(Visitor *visitor)        
+        {   return visitor->VisitGetExpr(this);}
 
 };
 
@@ -129,8 +129,8 @@ class Grouping : public Expr
     public:
         Expr* expression;
         Grouping(Expr* e){   expression = e;}
-        void Accept(Visitor *visitor)        
-        {   visitor->VisitGroupingExpr(this);}
+        string Accept(Visitor *visitor)        
+        {   return visitor->VisitGroupingExpr(this);}
 };
 
 
@@ -140,8 +140,8 @@ class Literal : public Expr
         string value;
         Literal(string v)
         {   value = v;}
-        void Accept(Visitor *visitor)       
-        {   visitor->VisitLiteralExpr(this);}
+        string Accept(Visitor *visitor)       
+        {   return visitor->VisitLiteralExpr(this);}
 };
 
 
@@ -158,8 +158,8 @@ class Logical : public Expr
             right = r;
         }
 
-        void Accept(Visitor *visitor)       
-        {   visitor->VisitLogicalExpr(this);}
+        string Accept(Visitor *visitor)       
+        {   return visitor->VisitLogicalExpr(this);}
 
 };
 
@@ -176,7 +176,7 @@ class Set : public Expr
             value = v;
         }
 
-        void Accept(Visitor *visitor)
+        string Accept(Visitor *visitor)
         {   return visitor->VisitSetExpr(this);}
 
 };
@@ -193,8 +193,8 @@ class Super : public Expr
             method = m;
         }
 
-        void Accept(Visitor *visitor)       
-        {   visitor->VisitSuperExpr(this);}
+        string Accept(Visitor *visitor)       
+        {   return visitor->VisitSuperExpr(this);}
 
 };
 
@@ -207,7 +207,7 @@ class This : public Expr
         This(Token k)
         {   keyword = k;}
 
-        void Accept(Visitor *visitor)        
+        string Accept(Visitor *visitor)        
         {   return visitor->VisitThisExpr(this);}
 
 };
@@ -223,8 +223,8 @@ class Unary : public Expr
         {   op = o;
             right = r;}
 
-        void Accept(Visitor *visitor)        
-        {   visitor->VisitUnaryExpr(this);}
+        string Accept(Visitor *visitor)        
+        {   return visitor->VisitUnaryExpr(this);}
 
 };
 
@@ -237,8 +237,8 @@ class Variable : public Expr
         Variable(Token n)
         {   name = n;}
 
-        void Accept(Visitor *visitor)      
-        {   visitor->VisitVariableExpr(this);}
+        string Accept(Visitor *visitor)      
+        {   return visitor->VisitVariableExpr(this);}
 
 };
 

@@ -8,42 +8,48 @@ class AstPrinter : public Visitor
     public:
     
 
-    void print(Expr* expr)
+    string print(Expr* expr)
     {   cout << "Entered print" << endl;
-        expr->Accept(this);}
+        return expr->Accept(this);}
 
-    void VisitBinaryExpr(Binary* expr) override
+    string VisitBinaryExpr(Binary* expr) override
     {
-        cout << "( ";
-        cout << expr->op.tokenLiteral();
-        expr->left->Accept(this);
-        expr->right->Accept(this);
-        cout << " )";
+        stringstream ss;
+        ss << "( ";
+        ss << expr->op.tokenLiteral();
+        ss << expr->left->Accept(this);
+        ss << expr->right->Accept(this);
+        ss << " )";
         //expr->Accept(this);
+        return ss.str();
     }
 
-    void VisitGroupingExpr(Grouping* expr) override
+    string VisitGroupingExpr(Grouping* expr) override
     {
         //cout << "Entered visitG" << endl;
-        cout << "( ";
-        cout << "Group ";
-        expr->expression->Accept(this);
-        cout << " )";
-    }
+        stringstream ss;
+        ss << "( ";
+        ss << "Group ";
+        ss << expr->expression->Accept(this);
+        ss << " )";
+        return ss.str();
+        }
 
-    void VisitLiteralExpr(Literal* expr) override
+    string VisitLiteralExpr(Literal* expr) override
     {
         //if (expr->value == "NIL") return "NIL";
         
-        cout << expr->value;
+        return expr->value;
     }
 
-    void VisitUnaryExpr(Unary* expr) override
+    string VisitUnaryExpr(Unary* expr) override
     {
-        cout << "( ";
-        cout << expr->op.tokenLiteral();
-        expr->right->Accept(this);
-        cout << " )";
+        stringstream ss;
+        ss << "( ";
+        ss << expr->op.tokenLiteral();
+        ss << expr->right->Accept(this);
+        ss << " )";
+        return ss.str();
     }
 
 };
@@ -62,6 +68,6 @@ int main()
 
     //cout << new AstPrinter<string>().print(expression) << endl;
     AstPrinter AstPrt;
-    cout << "Done building" << endl;
-    AstPrt.print(expression);
+    cout << "Done building Bazuka" << endl;
+    cout << AstPrt.print(expression);
 }
