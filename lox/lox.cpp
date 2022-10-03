@@ -74,14 +74,18 @@ class Lox
             for (itr = tokens.begin(); itr != tokens.end(); itr++ )
             {
                 //cout << " Token Counter : " << tokenCounter << endl;
-                cout << itr->toString() << endl;
+                cout << itr->tokenType() << endl;
 
                 tokenCounter++;
             }
 
             Parser parser(tokens);
-
+            Expr* expr = parser.parse();
             cout << "Parser ended" << endl;
+
+            Interpreter* interpreter = new Interpreter();
+            interpreter->interpret(expr);
+            cout << "Interpreter ended" << endl;
             exit(1);
         }
 

@@ -1,5 +1,5 @@
 
-#include "expr.cpp"
+#include "interpreter.cpp"
 
 #include <string>
 #include <iterator>
@@ -22,6 +22,10 @@ class Parser{
 
     public:
     Parser(list<Token> t);
+    Expr* parse()
+    {
+        return expression();
+    }
 
     private:
     //variables
@@ -65,6 +69,7 @@ Parser::expression()
 Expr* 
 Parser::equality()
 {
+    cout << "equality" << endl;
     Expr* expr = comparison();
     
     list<TokenType> tt;
@@ -88,6 +93,8 @@ Parser::equality()
 Expr* 
 Parser::comparison()
 {
+    cout << "comparison" << endl;
+
     Expr* expr = term();
     
     list<TokenType> tt;
@@ -113,6 +120,7 @@ Parser::comparison()
 Expr* 
 Parser::term()
 {
+    cout << "term" << endl;
     Expr* expr = factor();
     
     list<TokenType> tt;
@@ -136,6 +144,7 @@ Parser::term()
 Expr*
 Parser::factor()
 {
+    cout << "factor" << endl;
     Expr* expr = unary();
     
     list<TokenType> tt;
@@ -159,6 +168,7 @@ Parser::factor()
 Expr*
 Parser::unary()
 {
+    cout << "unary" << endl;
     list<TokenType> tt;
     tt.push_back(BANG);
     tt.push_back(MINUS);
@@ -178,21 +188,23 @@ Parser::unary()
 Expr*
 Parser::primary()
 {
+    cout << "primary" << endl;
     list<TokenType> t1, t2, t3, t4;
 
+    
     t1.push_back(FALSE);
-    if(match(t1)) return new Literal("FALSE");
+    if(match(t1)){cout << " False" << endl; return new Literal("FALSE");}
 
     t2.push_back(TRUE);
-    if(match(t2)) return new Literal("TRUE");
+    if(match(t2)){cout << " True" << endl; return new Literal("TRUE");}
 
     t3.push_back(NIL);
-    if(match(t3)) return new Literal("NIL");
+    if(match(t3)) {cout << " NIL" << endl; return new Literal("NIL");}
 
     list<TokenType> tt;
     tt.push_back(NUMBER);
     tt.push_back(STRING);
-    if(match(tt)) return new Literal(previous().tokenLiteral());
+    if(match(tt)){cout << " NUMBER/STRING: " << previous().tokenLiteral()  << endl; return new Literal(previous().tokenLiteral());}
 
     t4.push_back(LEFT_PAREN);
     if(match(t4))
@@ -261,11 +273,16 @@ Parser::peek()
 
 Token 
 Parser::previous()
-{
+{   
+    cout << "Entered previous()  Current: " << current  << endl;
     list<Token>::iterator i;
     int tokenIndexCounter = 0;
     for (i = tokens.begin(); i != tokens.end(); i++)
     {
+        if(current == 0)
+        {
+            return *i;
+        }
         
         if(tokenIndexCounter == (current-1))
         {
