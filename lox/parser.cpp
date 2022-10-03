@@ -72,6 +72,7 @@ Parser::equality()
     cout << "Equality -->";
     Expr* expr = comparison();
     
+    exit(1);
     list<TokenType> tt;
     tt.push_back(BANG_EQUAL);
     tt.push_back(EQUAL_EQUAL);
@@ -209,6 +210,7 @@ Parser::primary()
     t4.push_back(LEFT_PAREN);
     if(match(t4))
     {
+        cout << "LEFT_PAREN" << endl;
         Expr* expr = expression();
         consume(RIGHT_PAREN, "Expect ')' after expression" );
         return new Grouping(expr);
