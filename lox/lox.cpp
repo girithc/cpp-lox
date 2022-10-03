@@ -80,12 +80,15 @@ class Lox
             }
 
             Parser parser(tokens);
+            cout << endl << "---- Start Parse ----" << endl;
             Expr* expr = parser.parse();
-            cout << "Parser ended" << endl;
+            cout << "---- Parse ended ----" << endl << endl;
 
             Interpreter* interpreter = new Interpreter();
+
+            cout << "---- Start Interpreter ----" << endl;
             interpreter->interpret(expr);
-            cout << "Interpreter ended" << endl;
+            cout << "---- Interpreter ended ----" << endl << endl;
             exit(1);
         }
 

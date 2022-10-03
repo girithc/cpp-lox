@@ -69,7 +69,7 @@ Parser::expression()
 Expr* 
 Parser::equality()
 {
-    cout << "equality" << endl;
+    cout << "Equality -->";
     Expr* expr = comparison();
     
     list<TokenType> tt;
@@ -93,7 +93,7 @@ Parser::equality()
 Expr* 
 Parser::comparison()
 {
-    cout << "comparison" << endl;
+    cout << "Comparison -->";
 
     Expr* expr = term();
     
@@ -120,7 +120,7 @@ Parser::comparison()
 Expr* 
 Parser::term()
 {
-    cout << "term" << endl;
+    cout << "Term -->";
     Expr* expr = factor();
     
     list<TokenType> tt;
@@ -144,7 +144,7 @@ Parser::term()
 Expr*
 Parser::factor()
 {
-    cout << "factor" << endl;
+    cout << "Factor -->";
     Expr* expr = unary();
     
     list<TokenType> tt;
@@ -168,7 +168,7 @@ Parser::factor()
 Expr*
 Parser::unary()
 {
-    cout << "unary" << endl;
+    cout << "Unary -->";
     list<TokenType> tt;
     tt.push_back(BANG);
     tt.push_back(MINUS);
@@ -188,7 +188,7 @@ Parser::unary()
 Expr*
 Parser::primary()
 {
-    cout << "primary" << endl;
+    cout << "Primary" << endl;
     list<TokenType> t1, t2, t3, t4;
 
     
