@@ -72,19 +72,21 @@ Parser::equality()
     cout << "Equality -->";
     Expr* expr = comparison();
     
-    exit(1);
+    //exit(1);
     list<TokenType> tt;
     tt.push_back(BANG_EQUAL);
     tt.push_back(EQUAL_EQUAL);
 
     while(match(tt))
     {
+        cout << "   enter equality match " << endl;
         Token op = getToken(current-1);
         cout << "   Operator:" << op.tokenLiteral() << endl;  
 
-        exit(1);
+        
         Expr* r = comparison();
         
+        //exit(1);
         cout << "   creating Binary" << endl;
         expr = new Binary(expr, op, r);
         //string temp = e;
@@ -179,7 +181,8 @@ Parser::unary()
     tt.push_back(MINUS);
 
     while(match(tt))
-    {
+    {   
+        cout << "match Unary" << endl;
         Token op = getToken(current-1);
         Expr* r = unary();
         
@@ -193,9 +196,8 @@ Parser::unary()
 Expr*
 Parser::primary()
 {
-    cout << "" << endl;
+    cout << "Primary" << endl;
     list<TokenType> t1, t2, t3, t4;
-
     
     t1.push_back(FALSE);
     if(match(t1)){cout << " False" << endl; return new Literal("FALSE");}
@@ -211,7 +213,8 @@ Parser::primary()
     tt.push_back(STRING);
     if(match(tt))
     {
-        cout << " NUMBER/STRING: " ; 
+        cout << "   matched NUMBER/STRING: " << endl; 
+        cout << "   Current:" << this->current << endl;
         Token temp = getToken(current-1);
         //cout << " --" << temp.tokenLiteral() <<"--" << (current-1) << endl;
         return new Literal(temp.tokenLiteral());
@@ -220,8 +223,8 @@ Parser::primary()
     t4.push_back(LEFT_PAREN);
     if(match(t4))
     {
-        cout << "LEFT_PAREN" << endl;
-        cout << "   Current:" << this->current << endl;
+        cout << "   matched LEFT_PAREN" << endl;
+        cout << "   Current:" << this->current << endl<< endl;
 
         Expr* expr = expression();
         consume(RIGHT_PAREN, "Expect ')' after expression" );
@@ -234,7 +237,7 @@ Parser::primary()
 bool 
 Parser::match(list<TokenType> tt)
 {
-    cout << "   Enter match()" << endl;
+    //cout << "   Enter match()" << endl;
     list<TokenType>::iterator i;
     for (i = tt.begin(); i != tt.end(); i++)
     {
@@ -272,21 +275,20 @@ bool
 Parser::isNotEnd()
 {
     if (peek().tokenType() == "TokenEOF") return false;
-    
     return true;
 }
 
 Token 
 Parser::peek()
 {
-    cout << "   Enter peek()" << endl;
+    //cout << "   Enter peek()" << endl;
     list<Token>::iterator i;
     int tokenIndexCounter = 0;
     for (i = tokens.begin(); i != tokens.end(); i++)
     {
         if(tokenIndexCounter == this->current)
         {
-            cout << "       current: " << current << endl;
+            //cout << "       current: " << current << endl;
             return *i;
         }
         tokenIndexCounter += 1;
@@ -298,7 +300,7 @@ Parser::peek()
 Token 
 Parser::getToken(int index)
 {   
-    cout << "Entered getToken()  Current: " << current  << endl;
+    cout << "   Entered getToken(" << index << ")" << endl;
     list<Token>::iterator i;
     int tokenIndexCounter = 0;
     for (i = tokens.begin(); i != tokens.end(); i++)
@@ -310,14 +312,15 @@ Parser::getToken(int index)
         
         if(tokenIndexCounter == (index))
         {
+            cout << "       return = " << (*i).tokenLiteral() << endl;
             return *i;
         }
         tokenIndexCounter += 1;
     }
+     
 
     return Token();
 }
-
 
 // panic mode
 
@@ -333,7 +336,6 @@ Parser::consume(TokenType t, string message)
 
     throw error(peek(), message);
 }
-
 
 string 
 Parser::error(Token t, string message)

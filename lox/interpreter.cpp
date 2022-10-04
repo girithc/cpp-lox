@@ -8,7 +8,7 @@ class Interpreter : public Visitor
     public:
         string VisitLiteralExpr(Literal *expr) override
         {
-            cout << "Entered VisitLiteralExpr" << endl;
+            cout << "Entered VisitLiteralExpr: " << expr->value << endl;
             //cout << "Expr.value: " << expr->value << endl;
             return expr->value;
         }
@@ -35,6 +35,10 @@ class Interpreter : public Visitor
             cout << "Entered VisitBinaryExpr" << endl;
             string l = eval(expr->left);
             string r = eval(expr->right);
+            
+            //
+            cout << "   " << l << expr->op.tokenLiteral() << r << endl; 
+            //
 
             if(expr->op.tokenType() == "MINUS") return to_string(stod(l) - stod(r));
             else if(expr->op.tokenType() == "SLASH"){  return to_string(stod(l) / stod(r));}
@@ -48,7 +52,7 @@ class Interpreter : public Visitor
             else if(expr->op.tokenType() == "LESS"){  return compare(l, r, "<");} 
             else if(expr->op.tokenType() == "LESS_EQUAL"){  return compare(l, r, "<=");} 
             else if(expr->op.tokenType() == "BANG_EQUAL"){  return compare(l, r, "!=");} 
-            else if(expr->op.tokenType() == "EQUAL_EQUAL"){  return compare(l, r, "==");} 
+            else if(expr->op.tokenType() == "EQUAL_EQUAL"){ cout << "       Entered E_E" << endl;  return compare(l, r, "==");} 
             
             return "";
         }
@@ -104,7 +108,8 @@ class Interpreter : public Visitor
 //left to do. Equal and Unequal for null
 
         string compare(string one, string two, string op)
-        {
+        {   
+            if(isString(one, two)) return compareString(one, two, op);
             if (op ==">")
             {   if(stod(one) > stod(two)) 
                     return "true"; 
@@ -132,6 +137,42 @@ class Interpreter : public Visitor
             }
             else if (op == "==")
             {   if(stod(one) == stod(two)) 
+                    return "true"; 
+                return "false";
+            }
+            
+            return "false";
+        }
+
+        string compareString(string one, string two, string op)
+        {
+            if (op ==">")
+            {   if((one) > (two)) 
+                    return "true"; 
+                return "false";
+            }
+            else if (op ==">=")
+            {   if((one) >= (two)) 
+                    return "true"; 
+                return "false";
+            }
+            else if (op == "<")
+            {   if((one) < (two)) 
+                    return "true"; 
+                return "false";
+            }
+            else if (op == "<=")
+            {   if((one) <= (two)) 
+                    return "true"; 
+                return "false";
+            }
+            else if (op == "!=")
+            {   if((one) != (two))  
+                    return "true"; 
+                return "false";
+            }
+            else if (op == "==")
+            {   if((one) == (two)) 
                     return "true"; 
                 return "false";
             }
