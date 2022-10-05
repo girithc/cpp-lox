@@ -1,9 +1,11 @@
-#include "expr.cpp"
+#include "stmt.cpp"
 #include <string>
 #include <string.h>
+#include <list>
+#include <iterator>
 
 
-class Interpreter : public Visitor
+class Interpreter : public Visitor, VisitorStmt
 {
     public:
         string VisitLiteralExpr(Literal *expr) override
@@ -28,6 +30,19 @@ class Interpreter : public Visitor
             else if (expr->op.tokenType() == "BANG") return notTrue(r);
 
             return "";      
+        }
+
+        string VisitExpressionStmt(Expression* stmt) override
+        {
+            string e = eval(stmt->expression);
+            return "";
+        }
+
+        string VisitPrintStmt(Print* stmt) override
+        {
+            string v = eval(stmt->expression);
+            cout <<"Print: " << v << endl;
+            return "";
         }
 
         string VisitBinaryExpr(Binary *expr) override
@@ -57,17 +72,28 @@ class Interpreter : public Visitor
             return "";
         }
 
-        void interpret(Expr* expr)
+        void interpret(list<Stmt*> stmts)
         {
             try {
-                string value = eval(expr);
-                cout << "Eval: " <<  value << endl;
+                //string value = eval(expr);
+                //cout << "Eval: " <<  value << endl;
+                list<Stmt*>::iterator i;
+                for (i = stmts.begin(); i != stmts.end(); i++)
+                {
+                    execute(*i);
+                }
+
             } catch (...) {
                 cout << "Error in interpreter" << endl;
             }
         }
 
     private:
+        void execute(Stmt* stmt)
+        {
+            string r = stmt->Accept(this);
+        }
+
         string eval(Expr *expr)
         {
             cout << "Entered eval" << endl;

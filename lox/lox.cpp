@@ -81,13 +81,14 @@ class Lox
 
             Parser parser(tokens);
             cout << endl << "---- Start Parse ----" << endl;
-            Expr* expr = parser.parse();
+            //Expr* expr = parser.parse();
+            list<Stmt*> stmts = parser.parse();
             cout << "---- Parse ended ----" << endl << endl;
 
             Interpreter* interpreter = new Interpreter();
 
             cout << "---- Start Interpreter ----" << endl;
-            interpreter->interpret(expr);
+            interpreter->interpret(stmts);
             cout << "---- Interpreter ended ----" << endl << endl;
             exit(1);
         }

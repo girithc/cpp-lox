@@ -6,7 +6,6 @@
 #include <list>
 
 using namespace std;
-
 /*
 expression     → equality ;
 equality       → comparison ( ( "!=" | "==" ) comparison )* ;
@@ -19,61 +18,41 @@ primary        → NUMBER | STRING | "true" | "false" | "nil"
                | "(" expression ")" ;
 
 */
-
-/*
-program        → statement* EOF ;
-statement      → exprStmt
-               | printStmt ;
-exprStmt       → expression ";" ;
-printStmt      → "print" expression ";" ;
-*/
 class Parser{
 
     public:
     Parser(list<Token> t);
-
-    list<Stmt*> parse()
+    Expr* parse()
     {
-        list<Stmt*> stmtList;
-        while(isNotEnd())
-        {
-            stmtList.push_back(statement());
-        }
-        return stmtList;
+        return expression();
     }
 
     private:
-        //variables
-        list<Token> tokens;
-        int current = 0;
+    //variables
+    list<Token> tokens;
+    int current = 0;
 
-        //helper
-        Token getToken(int index);
-        Token peek(); 
-        void advanceToken();
-        bool isNotEnd();
-        bool check(TokenType t);
-        bool match(list<TokenType> types);
+    //helper
+    Token getToken(int index);
+    Token peek(); 
+    void advanceToken();
+    bool isNotEnd();
+    bool check(TokenType t);
+    bool match(list<TokenType> types);
 
-        //parsing expression
-        Expr* equality();
-        Expr* expression();
-        Expr* comparison();
-        Expr* term();
-        Expr* factor();
-        Expr* unary();
-        Expr* primary();
+    //parsing expression
+    Expr* equality();
+    Expr* expression();
+    Expr* comparison();
+    Expr* term();
+    Expr* factor();
+    Expr* unary();
+    Expr* primary();
 
-        //parsing stmt
-        Stmt* statement();
-        Stmt* printStatement();
-        Stmt* expressionStatement();
-
-
-        //panic mode
-        Token consume(TokenType t, string message);
-        string error(Token t, string message);
-        void synchronize();
+    //panic mode
+    Token consume(TokenType t, string message);
+    string error(Token t, string message);
+    void synchronize();
 };
 
 Parser::Parser(list<Token> t)
@@ -85,32 +64,6 @@ Expr*
 Parser::expression()
 {
     return equality();
-}
-
-Stmt*
-Parser::statement()
-{
-    list<TokenType> tt;
-    tt.push_back(PRINT);
-
-    if(match(tt)) return printStatement();
-    return expressionStatement();
-}
-
-Stmt* 
-Parser::printStatement()
-{
-    Expr* expr = expression();
-    consume(SEMICOLON,"Expect ';' after value.");
-    return new Print(expr);
-}
-
-Stmt*
-Parser::expressionStatement()
-{
-    Expr* expr = expression();
-    consume(SEMICOLON,"Expect ';' after expression.");
-    return new Expression(expr);
 }
 
 Expr* 
@@ -280,8 +233,6 @@ Parser::primary()
 
     throw error(peek(), "Expect expression");
 }
-
-
 
 bool 
 Parser::match(list<TokenType> tt)

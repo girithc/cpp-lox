@@ -1,1 +1,3 @@
-true == false
+print "one";
+print true;
+print 2 + 0;

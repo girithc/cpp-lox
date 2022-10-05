@@ -2,7 +2,6 @@
 #include <list>
 #include <string>
 
-#include "token.cpp"
 #include "expr.cpp"
 
 using namespace std;
@@ -27,16 +26,17 @@ class While;
 
 class VisitorStmt : public Stmt 
 {
-    ~VisitorStmt(){}
-    virtual string VisitBlockStmt(Block* stmt){return "";};
-    virtual string VisitClassStmt(Class* stmt){return "";};
-    virtual string VisitExpressionStmt(Expression* stmt){return "";};
-    virtual string VisitFunctionStmt(Function* stmt){return "";};
-    virtual string VisitIfStmt(If* stmt){return "";};
-    virtual string VisitPrintStmt(Print* stmt){return "";};
-    virtual string VisitReturnStmt(Return* stmt){return "";};
-    virtual string VisitVarStmt(Var* stmt){return "";};
-    virtual string VisitWhileStmt(While* stmt){return "";};
+    public:
+        ~VisitorStmt(){}
+        virtual string VisitBlockStmt(Block* stmt){return "";};
+        virtual string VisitClassStmt(Class* stmt){return "";};
+        virtual string VisitExpressionStmt(Expression* stmt){return "";};
+        virtual string VisitFunctionStmt(Function* stmt){return "";};
+        virtual string VisitIfStmt(If* stmt){return "";};
+        virtual string VisitPrintStmt(Print* stmt){return "";};
+        virtual string VisitReturnStmt(Return* stmt){return "";};
+        virtual string VisitVarStmt(Var* stmt){return "";};
+        virtual string VisitWhileStmt(While* stmt){return "";};
 };
 
 class Block : public Stmt
@@ -127,7 +127,7 @@ class If : public Stmt
 
     string Accept(VisitorStmt* visitor)
     {
-        visitor->VisitIfStmt(this);
+        return visitor->VisitIfStmt(this);
     }
 };
 
@@ -161,7 +161,7 @@ class Return : public Stmt
 
         string Accept(VisitorStmt* visitor)
         {
-            visitor->VisitReturnStmt(this);
+            return visitor->VisitReturnStmt(this);
         }
 };
 
