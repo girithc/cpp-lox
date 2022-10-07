@@ -26,6 +26,12 @@ statement      → exprStmt
                | printStmt ;
 exprStmt       → expression ";" ;
 printStmt      → "print" expression ";" ;
+
+program        → declaration* EOF ;
+declaration    → varDecl
+               | statement ;
+statement      → exprStmt
+               | printStmt ;
 */
 class Parser{
 
@@ -37,7 +43,7 @@ class Parser{
         list<Stmt*> stmtList;
         while(isNotEnd())
         {
-            stmtList.push_back(statement());
+            stmtList.push_back(declaration());
         }
         return stmtList;
     }
@@ -69,6 +75,9 @@ class Parser{
         Stmt* printStatement();
         Stmt* expressionStatement();
 
+        Stmt* declaration();
+        Stmt* varDeclaration();
+
 
         //panic mode
         Token consume(TokenType t, string message);
@@ -85,6 +94,39 @@ Expr*
 Parser::expression()
 {
     return equality();
+}
+
+Stmt* 
+Parser::declaration()
+{
+    try
+    {
+        cout << "Entered declaration()" << endl;
+        list<TokenType> tt;
+        tt.push_back(VAR);
+        if (match(tt)) return varDeclaration();
+        return statement();
+    }
+    catch(...)
+    {
+        throw invalid_argument("Parser error");
+    }   
+}
+
+Stmt* 
+Parser::varDeclaration()
+{
+    cout << "   Entered varDeclaration()" << endl;
+    Token n = consume(IDENTIFIER, "Expect a variable name. ");
+    Expr* init = NULL;
+
+    list<TokenType> token_types;
+    token_types.push_back(EQUAL);
+
+    if(match(token_types)) init = expression();
+
+    Token m = consume(SEMICOLON, "Expect ';' after a variable name. ");
+    return new Var(n, init);
 }
 
 Stmt*
@@ -244,7 +286,7 @@ Expr*
 Parser::primary()
 {
     cout << "Primary" << endl;
-    list<TokenType> t1, t2, t3, t4;
+    list<TokenType> t1, t2, t3, t4, t5;
     
     t1.push_back(FALSE);
     if(match(t1)){cout << " False" << endl; return new Literal("FALSE");}
@@ -266,9 +308,12 @@ Parser::primary()
         //cout << " --" << temp.tokenLiteral() <<"--" << (current-1) << endl;
         return new Literal(temp.tokenLiteral());
     }
+
+    t4.push_back(IDENTIFIER);
+    if(match(t4)) return new Variable(getToken(current-1));
     
-    t4.push_back(LEFT_PAREN);
-    if(match(t4))
+    t5.push_back(LEFT_PAREN);
+    if(match(t5))
     {
         cout << "   matched LEFT_PAREN" << endl;
         cout << "   Current:" << this->current << endl<< endl;
@@ -280,8 +325,6 @@ Parser::primary()
 
     throw error(peek(), "Expect expression");
 }
-
-
 
 bool 
 Parser::match(list<TokenType> tt)
@@ -378,7 +421,7 @@ Parser::consume(TokenType t, string message)
 {
     if (check(t))
     {
-        Token token = getToken(current-1);
+        Token token = getToken(current);
         advanceToken();
         return token;
     } 

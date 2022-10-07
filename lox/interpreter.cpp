@@ -32,6 +32,12 @@ class Interpreter : public Visitor, VisitorStmt
             return "";      
         }
 
+        string VisitVariableExpr(Variable* expr) override
+        {
+            cout << "Entered VisitVariableExpr " << endl;
+            return env->getItem(expr->name);
+        }
+
         string VisitExpressionStmt(Expression* stmt) override
         {
             string e = eval(stmt->expression);
@@ -41,7 +47,18 @@ class Interpreter : public Visitor, VisitorStmt
         string VisitPrintStmt(Print* stmt) override
         {
             string v = eval(stmt->expression);
-            cout <<"Print: " << v << endl;
+            cout <<"interpreter >> Print: " << v << endl;
+            return "";
+        }
+
+        string VisitVarStmt(Var* stmt) override
+        {
+            cout << "Entered VisitVarStmt " << endl;
+            string v = "";
+            if(stmt->intializer)
+            {   v = eval(stmt->intializer);} 
+
+            env->define(stmt->name.tokenLiteral(), v);
             return "";
         }
 
@@ -78,8 +95,11 @@ class Interpreter : public Visitor, VisitorStmt
                 //string value = eval(expr);
                 //cout << "Eval: " <<  value << endl;
                 list<Stmt*>::iterator i;
+                int counter = 0;
                 for (i = stmts.begin(); i != stmts.end(); i++)
                 {
+                    counter++;
+                    cout << "c: " << counter << endl;
                     execute(*i);
                 }
 
@@ -89,6 +109,8 @@ class Interpreter : public Visitor, VisitorStmt
         }
 
     private:
+        Environment *env = new Environment();
+        
         void execute(Stmt* stmt)
         {
             string r = stmt->Accept(this);
