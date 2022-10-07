@@ -34,31 +34,17 @@ class Interpreter : public Visitor, VisitorStmt
 
         string VisitVariableExpr(Variable* expr) override
         {
-            cout << "Entered VisitVariableExpr " << endl;
+            cout << "Entered VisitVariableExpr: " << expr->name.tokenLiteral() << endl;
             return env->getItem(expr->name);
         }
 
-        string VisitExpressionStmt(Expression* stmt) override
-        {
-            string e = eval(stmt->expression);
-            return "";
-        }
 
-        string VisitPrintStmt(Print* stmt) override
+        string VisitAssignExpr(Assign* expr) override
         {
-            string v = eval(stmt->expression);
-            cout <<"interpreter >> Print: " << v << endl;
-            return "";
-        }
-
-        string VisitVarStmt(Var* stmt) override
-        {
-            cout << "Entered VisitVarStmt " << endl;
-            string v = "";
-            if(stmt->intializer)
-            {   v = eval(stmt->intializer);} 
-
-            env->define(stmt->name.tokenLiteral(), v);
+            cout << "Entered VisitAssignExpr" << endl;
+            string v = eval(expr->value);
+            //cout << "   new Value: " << v << endl;
+            env->assign(expr->name, v);
             return "";
         }
 
@@ -88,6 +74,31 @@ class Interpreter : public Visitor, VisitorStmt
             
             return "";
         }
+
+        string VisitExpressionStmt(Expression* stmt) override
+        {
+            string e = eval(stmt->expression);
+            return "";
+        }
+
+        string VisitPrintStmt(Print* stmt) override
+        {
+            string v = eval(stmt->expression);
+            cout <<"interpreter >> Print: " << v << endl;
+            return "";
+        }
+
+        string VisitVarStmt(Var* stmt) override
+        {
+            cout << "Entered VisitVarStmt " << endl;
+            string v = "";
+            if(stmt->intializer)
+            {   v = eval(stmt->intializer);} 
+
+            env->define(stmt->name.tokenLiteral(), v);
+            return "";
+        }
+
 
         void interpret(list<Stmt*> stmts)
         {

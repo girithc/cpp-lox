@@ -69,6 +69,7 @@ class Parser{
         Expr* factor();
         Expr* unary();
         Expr* primary();
+        Expr* assignment();
 
         //parsing stmt
         Stmt* statement();
@@ -93,7 +94,7 @@ Parser::Parser(list<Token> t)
 Expr* 
 Parser::expression()
 {
-    return equality();
+    return assignment();
 }
 
 Stmt* 
@@ -132,10 +133,13 @@ Parser::varDeclaration()
 Stmt*
 Parser::statement()
 {
-    list<TokenType> tt;
-    tt.push_back(PRINT);
+    list<TokenType> t1,t2;
 
-    if(match(tt)) return printStatement();
+    t1.push_back(PRINT);
+    if(match(t1)) return printStatement();
+
+    //t2.push_back(LEFT_BRACE) return new Block(block());
+   
     return expressionStatement();
 }
 
@@ -153,6 +157,31 @@ Parser::expressionStatement()
     Expr* expr = expression();
     consume(SEMICOLON,"Expect ';' after expression.");
     return new Expression(expr);
+}
+
+Expr* 
+Parser::assignment()
+{
+    Expr* expr = equality();
+    list<TokenType> token_types;
+    token_types.push_back(EQUAL);
+
+    if (match(token_types))
+    {
+        Token e = getToken(current-1); 
+        cout << "Token in assignment: " << e.tokenLiteral() << endl;
+        Expr* v = assignment();
+        if(dynamic_cast<const Variable*>(expr) != nullptr)
+        {
+            Variable *vr = dynamic_cast< Variable*>(expr);
+            Token n = vr->name;
+            cout << "Token for Assign: " << n.tokenLiteral() << endl;
+            return new Assign(n, v);
+        }
+
+        throw invalid_argument("Error in Variable casting on Expr. Location: assignment() " );
+    }
+    return expr;
 }
 
 Expr* 
