@@ -78,6 +78,7 @@ class Parser{
 
         Stmt* declaration();
         Stmt* varDeclaration();
+        list<Stmt*> block();
 
 
         //panic mode
@@ -138,7 +139,8 @@ Parser::statement()
     t1.push_back(PRINT);
     if(match(t1)) return printStatement();
 
-    //t2.push_back(LEFT_BRACE) return new Block(block());
+    t2.push_back(LEFT_BRACE);
+    if(match(t2)) return new Block(block());
    
     return expressionStatement();
 }
@@ -157,6 +159,18 @@ Parser::expressionStatement()
     Expr* expr = expression();
     consume(SEMICOLON,"Expect ';' after expression.");
     return new Expression(expr);
+}
+
+list<Stmt*>
+Parser::block()
+{
+    list<Stmt*> s;
+    while(!check(RIGHT_BRACE) && isNotEnd())
+    {
+        s.push_back(declaration());
+    }
+    consume(RIGHT_BRACE, "Expect '}' after a block.");
+    return s;
 }
 
 Expr* 

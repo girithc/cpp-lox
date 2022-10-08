@@ -99,6 +99,29 @@ class Interpreter : public Visitor, VisitorStmt
             return "";
         }
 
+        string VisitBlockStmt(Block* stmt) override
+        {
+            list<Stmt*> s = stmt->stmts;
+            Environment *envtemp = env;
+
+                try
+                {
+                    env = new Environment(env);
+                    list<Stmt*>::iterator i;
+                    for (i = s.begin(); i != s.end(); i++)
+                    {
+                        execute(*i);
+                    }
+                }
+                catch(exception e)
+                {
+                    std::cerr << e.what() << '\n';
+                }
+            env = envtemp;
+            return "";
+            
+        }
+        
 
         void interpret(list<Stmt*> stmts)
         {
