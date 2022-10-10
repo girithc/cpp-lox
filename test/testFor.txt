@@ -1,0 +1,5 @@
+testForStatement()
+interpreter >> 0
+interpreter >> 1.000000
+interpreter >> 2.000000
+interpreter >> 3.000000
