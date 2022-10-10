@@ -1,6 +1,0 @@
-testWhileStatement()
-interpreter >> 4
-interpreter >> 5.000000
-interpreter >> 6.000000
-interpreter >> 7.000000
-interpreter >> 8.000000

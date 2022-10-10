@@ -1,4 +1,0 @@
-testIfStatement()
-interpreter >> a is greater than 1
-interpreter >> yes
-interpreter >> FALSE

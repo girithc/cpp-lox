@@ -132,7 +132,7 @@ class Interpreter : public Visitor, VisitorStmt
         {
             //cout << "   Entered VisitPrintStmt" << endl;
             string v = eval(stmt->expression);
-            cout <<"interpreter >> " << v << endl;
+            cout  << v << endl;
             
             return "";
         }

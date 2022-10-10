@@ -8,6 +8,8 @@
 using namespace std;
 
 /*
+testCases 
+
 var i = 1;
   for (var a = 0; i < 3; a=a+1) {
     i =a;
@@ -31,6 +33,7 @@ else print "a is greater than 1";
 
 void testIfStatement()
 {
+    //cout << "Enter testIfStatement()" << endl;
     ofstream testFile;
     testFile.open("test/testIf.txt");
 
@@ -40,6 +43,7 @@ void testIfStatement()
     code.append("if(true) print \"yes\" or nil;");
     code.append("if(!nil) print true and false;");
 
+    streambuf* oldCout = cout.rdbuf();
     cout.rdbuf(testFile.rdbuf());
 
     cout << "testIfStatement()" << endl;
@@ -55,10 +59,32 @@ void testIfStatement()
 
     testFile.close();
 
+    cout.rdbuf(oldCout);
     ifstream rdFile;
+    ofstream wrFile;
+
+    string line;
     rdFile.open("test/testIf.txt");
+    wrFile.open("test/testParserAndInterpreter.txt");
+
+    getline(rdFile, line);
+    wrFile << line << endl;
 
     
+    getline(rdFile, line);
+    assert(line == "a is greater than 1");
+    wrFile << "Test passed: (" << line << ") = " << "(a is greater than 1)" << endl;
+
+    getline(rdFile, line);
+    assert(line == "yes");
+    wrFile << "Test passed: (" << line << ") = " << "(yes)" << endl;
+
+    getline(rdFile, line);
+    assert(line == "FALSE");
+    wrFile << "Test passed: (" << line << ") = " << "(FALSE)" << endl << endl;
+
+    rdFile.close();
+    remove("test/testIf.txt");
 
 
 }
@@ -73,6 +99,7 @@ void testWhileStatement()
     code.append("print a; a = a+1; }");
     code.append("print a;");
 
+    streambuf* oldCout = cout.rdbuf();
     cout.rdbuf(testFile.rdbuf());
 
     cout << "testWhileStatement()" << endl;
@@ -87,6 +114,42 @@ void testWhileStatement()
     interpreter->interpret(stmts);
 
     testFile.close();
+
+
+    cout.rdbuf(oldCout);
+    ifstream rdFile;
+    ofstream wrFile;
+
+    string line;
+    rdFile.open("test/testWhile.txt");
+    wrFile.open("test/testParserAndInterpreter.txt", ios_base::app);
+
+    getline(rdFile, line);
+    wrFile << line << endl;
+
+    
+    getline(rdFile, line);
+    assert(stod(line) == stod("4"));
+    wrFile << "Test passed: (" << stod(line) << ") = (" << stod("4") << ")" << endl;
+
+    getline(rdFile, line);
+    assert(stod(line) == stod("5"));
+    wrFile << "Test passed: (" << stod(line) << ") = (" << stod("5") << ")" << endl;
+
+    getline(rdFile, line);
+    assert(stod(line) == stod("6"));
+    wrFile << "Test passed: (" << stod(line) << ") = (" << stod("6") << ")" << endl;
+
+    getline(rdFile, line);
+    assert(stod(line) == stod("7"));
+    wrFile << "Test passed: (" << stod(line) << ") = (" << stod("7") << ")" << endl;
+
+    getline(rdFile, line);
+    assert(stod(line) == stod("8"));
+    wrFile << "Test passed: (" << stod(line) << ") = (" << stod("8") << ")" << endl << endl;
+
+    rdFile.close();
+    remove("test/testWhile.txt");
 }
 
 void testForStatement()
@@ -98,9 +161,11 @@ void testForStatement()
     code.append("for (var a = 0; a<i; a=a+1)");
     code.append("{print a;}");
 
+    streambuf* oldCout = cout.rdbuf();
     cout.rdbuf(testFile.rdbuf());
 
     cout << "testForStatement()" << endl;
+    
 
     Scanner scanner(code);
     list<Token> testTokens = scanner.scanTokens();
@@ -112,6 +177,37 @@ void testForStatement()
     interpreter->interpret(stmts);
 
     testFile.close();
+
+    cout.rdbuf(oldCout);
+    ifstream rdFile;
+    ofstream wrFile;
+
+    string line;
+    rdFile.open("test/testFor.txt");
+    wrFile.open("test/testParserAndInterpreter.txt", ios_base::app);
+
+    getline(rdFile, line);
+    wrFile << line << endl;
+
+    
+    getline(rdFile, line);
+    assert(stod(line) == stod("0"));
+    wrFile << "Test passed: (" << stod(line) << ") = (" << stod("0") << ")" << endl;
+
+    getline(rdFile, line);
+    assert(stod(line) == stod("1"));
+    wrFile << "Test passed: (" << stod(line) << ") = (" << stod("1") << ")" << endl;
+
+    getline(rdFile, line);
+    assert(stod(line) == stod("2"));
+    wrFile << "Test passed: (" << stod(line) << ") = (" << stod("2") << ")" << endl;
+
+    getline(rdFile, line);
+    assert(stod(line) == stod("3"));
+    wrFile << "Test passed: (" << stod(line) << ") = (" << stod("3") << ")" << endl << endl;
+
+    rdFile.close();
+    remove("test/testFor.txt");
 }
 
 
@@ -119,7 +215,7 @@ void testForStatement()
 
 void testParserAndInterpreter()
 {
-    cout << "Enter testParserAndInterpreter()" << endl;
+    //cout << "Enter testParserAndInterpreter()" << endl;
     testIfStatement();
     testWhileStatement();
     testForStatement();

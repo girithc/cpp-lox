@@ -12,7 +12,7 @@ using namespace std;
 void testDeclaration()
     {
         ofstream testFile;
-        testFile.open("test/testScannerResult.txt");
+        testFile.open("test/testScanner.txt");
 
         string code = "var a = \"Declared\";";
         code.append("a = 4;");
@@ -65,7 +65,7 @@ void testDeclaration()
 void testIfElseAndComparison()
 {
         ofstream testFile;
-        testFile.open("test/testScannerResult.txt", ios_base::app);
+        testFile.open("test/testScanner.txt", ios_base::app);
 
         string code = "if (a<b) {";
         code.append("  print a/b;");
@@ -171,7 +171,7 @@ void testIfElseAndComparison()
 void testWhileAndBool()
 {
         ofstream testFile;
-        testFile.open("test/testScannerResult.txt",  ios_base::app);
+        testFile.open("test/testScanner.txt",  ios_base::app);
 
         string code = "while (true and false){ // comment";
         code.append("\n");
@@ -246,7 +246,7 @@ void testWhileAndBool()
 void testScanner()
     {
         
-        cout << "Enter test scanner" << endl;
+        //cout << "Enter test scanner" << endl;
         testDeclaration();
         testIfElseAndComparison();
         testWhileAndBool();

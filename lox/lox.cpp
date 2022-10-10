@@ -118,11 +118,13 @@ class Lox
         else if (argc == 2 && strcmp(argv[1],"parser")==0)
         {
             //testScanner();
+            cout << "Testing Interpreter and Parser..." << endl;
             testParserAndInterpreter();
         } 
         else if (argc == 2 && strcmp(argv[1],"interpreter")==0)
         {
             //testScanner();
+            cout << "Testing Interpreter and Parser..." << endl;
             testParserAndInterpreter();
         } 
         else if (argc > 2)

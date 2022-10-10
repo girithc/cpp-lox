@@ -1,0 +1,18 @@
+testIfStatement()
+Test passed: (a is greater than 1) = (a is greater than 1)
+Test passed: (yes) = (yes)
+Test passed: (FALSE) = (FALSE)
+
+testWhileStatement()
+Test passed: (4) = (4)
+Test passed: (5) = (5)
+Test passed: (6) = (6)
+Test passed: (7) = (7)
+Test passed: (8) = (8)
+
+testForStatement()
+Test passed: (0) = (0)
+Test passed: (1) = (1)
+Test passed: (2) = (2)
+Test passed: (3) = (3)
+
