@@ -15,6 +15,22 @@ class Interpreter : public Visitor, VisitorStmt
             return expr->value;
         }
 
+        string VisitLogicalExpr(Logical* expr) override
+        {
+            string l = eval(expr->left);
+
+            if(expr->op.tokenType() == "OR")
+            {
+                if(notTrue(l) == "false") return l;
+            }
+            else
+            {
+                if(notTrue(l) == "true") return l;
+            }
+
+            return eval(expr->right);
+        }
+
         string VisitGroupingExpr(Grouping *expr) override
         {
             cout << "Entered VisitGroupingExpr" << endl;
@@ -67,7 +83,7 @@ class Interpreter : public Visitor, VisitorStmt
             } 
             else if(expr->op.tokenType() == "GREATER"){  return compare(l, r, ">");} 
             else if(expr->op.tokenType() == "GREATER_EQUAL"){  return compare(l, r, ">=");} 
-            else if(expr->op.tokenType() == "LESS"){  return compare(l, r, "<");} 
+            else if(expr->op.tokenType() == "LESS"){ cout << "      LESS" << endl;  return compare(l, r, "<");} 
             else if(expr->op.tokenType() == "LESS_EQUAL"){  return compare(l, r, "<=");} 
             else if(expr->op.tokenType() == "BANG_EQUAL"){  return compare(l, r, "!=");} 
             else if(expr->op.tokenType() == "EQUAL_EQUAL"){ cout << "       Entered E_E" << endl;  return compare(l, r, "==");} 
@@ -80,11 +96,44 @@ class Interpreter : public Visitor, VisitorStmt
             string e = eval(stmt->expression);
             return "";
         }
+        
+        string VisitWhileStmt(While* stmt) override
+        {
+            cout << "Entered VisitWhileStmt" << endl;
+            int i = 0;
+            while(notTrue(eval(stmt->condition)) == "false")
+            {
+                cout << "       ";
+                execute(stmt->body);
+                //i++;
+                //if(i > 4) exit(1);
+            }
+                
+            
+            return "";
+        }
+
+        string VisitIfStmt(If* stmt) override
+        {
+            cout << "Enter if statement()" << endl;
+            if(notTrue(eval(stmt->condition)) == "false")
+            {
+                cout << "   Enter ifBranch" << endl;
+                execute(stmt->ifBranch);
+            }
+
+            else if(stmt->elseBranch)
+                execute(stmt->elseBranch);
+        
+            return "";
+        }
 
         string VisitPrintStmt(Print* stmt) override
         {
+            cout << "   Entered VisitPrintStmt" << endl;
             string v = eval(stmt->expression);
             cout <<"interpreter >> Print: " << v << endl;
+            
             return "";
         }
 
@@ -147,6 +196,7 @@ class Interpreter : public Visitor, VisitorStmt
         
         void execute(Stmt* stmt)
         {
+            cout << "   Entered execute" << endl;
             string r = stmt->Accept(this);
         }
 
@@ -158,23 +208,42 @@ class Interpreter : public Visitor, VisitorStmt
 
         string notTrue(string s)
         {
-            if (s == "") return "true";
-            if (s == "true") return "false";
-            if (s == "false") return "true";
+            cout << "notTrue (" << s << ")" << endl;
+            if (s == "")
+            {   
+                //cout <<  "  " << s << "is true" << endl; 
+                return "true"; 
+            }
+            if (s == "true") 
+            {
+                //cout <<  "  " << s << "is false" << endl; 
+                return "false"; 
+            }
+            if (s == "false" || s == "NIL") 
+            {
+                //cout <<  "  " << s << "is true" << endl; 
+                return "true"; 
+            }
+
             return "false";
 
         }
 
         bool isDouble(string one, string two)
         {
+            cout << "      checking string one" << one;
             for (int i = 0; i < one.length(); i++)
             {
                 if (isdigit(one[i])) continue;
+                else if(one[i] =='.' && isdigit(one[i+1])) continue;
                 else return false;
             }
+            cout << "      checking string two" << two;
             for (int i = 0; i < two.length(); i++)
             {
+                 
                 if (isdigit(two[i])) continue;
+                else if(one[i] =='.' && isdigit(one[i+1])) continue;
                 else return false;
             }
 
@@ -191,7 +260,7 @@ class Interpreter : public Visitor, VisitorStmt
 
         string compare(string one, string two, string op)
         {   
-            if(isString(one, two)) return compareString(one, two, op);
+            if(isString(one, two)){cout << "        isString" << endl; return compareString(one, two, op);}
             if (op ==">")
             {   if(stod(one) > stod(two)) 
                     return "true"; 
@@ -203,7 +272,8 @@ class Interpreter : public Visitor, VisitorStmt
                 return "false";
             }
             else if (op == "<")
-            {   if(stod(one) < stod(two)) 
+            {   cout << "           LEss" << endl;
+                if(stod(one) < stod(two)) 
                     return "true"; 
                 return "false";
             }

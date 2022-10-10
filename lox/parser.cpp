@@ -70,10 +70,15 @@ class Parser{
         Expr* unary();
         Expr* primary();
         Expr* assignment();
+        Expr* logicOr();
+        Expr* logicAnd();
 
         //parsing stmt
         Stmt* statement();
+        Stmt* ifStatement();
         Stmt* printStatement();
+        Stmt* whileStatement();
+        Stmt* forStatement();
         Stmt* expressionStatement();
 
         Stmt* declaration();
@@ -134,15 +139,110 @@ Parser::varDeclaration()
 Stmt*
 Parser::statement()
 {
-    list<TokenType> t1,t2;
+    list<TokenType> t1,t2, t3, t4, t5;
 
-    t1.push_back(PRINT);
-    if(match(t1)) return printStatement();
+    t5.push_back(FOR);
+    if(match(t5)) return forStatement();
 
-    t2.push_back(LEFT_BRACE);
-    if(match(t2)) return new Block(block());
+    t1.push_back(IF);
+    if(match(t1)) return ifStatement();
+
+    t2.push_back(PRINT);
+    if(match(t2)) return printStatement();
+
+    t3.push_back(WHILE);
+    if(match(t3)) return whileStatement();
+
+    t4.push_back(LEFT_BRACE);
+    if(match(t4)) return new Block(block());
    
     return expressionStatement();
+}
+
+Stmt*
+Parser::forStatement()
+{
+    consume(LEFT_PAREN, "Expect '(' after a 'for'");
+    Stmt* init;
+    list<TokenType> t1, t2;
+    t1.push_back(SEMICOLON);
+    t2.push_back(VAR);
+
+    //FOR(int i = 0; i < 10; i++)
+    if(match(t1)) init = NULL;
+    else if(match(t2)) init = varDeclaration();
+    else init  = expressionStatement();
+
+    //condition
+    Expr* condition = NULL;
+    if(!check(SEMICOLON)) condition = expression();
+    consume(SEMICOLON, "Expect ';' after for loop condition" );
+
+    //for loop increment
+    Expr* increment = NULL;
+    if(!check(RIGHT_PAREN)) increment = expression();
+    consume(RIGHT_PAREN, "Expect ')' after a for clause" );
+    
+    //body
+    Stmt* body = statement();
+
+    //increment var
+    if(increment)
+    {
+        list<Stmt*> stmts;
+        stmts.push_back(body);
+        stmts.push_back(new Expression(increment));
+
+        body = new Block(stmts);
+    }
+
+    //check condition
+    if(!condition) condition = new Literal("true");
+    body = new While(condition, body);
+    
+    if(init) 
+    {
+        list<Stmt*> stmts;
+        stmts.push_back(init);
+        stmts.push_back(body);
+        
+        body = new Block(stmts);
+    }
+
+
+
+    return body;
+}
+
+Stmt* 
+Parser::whileStatement()
+{
+    consume(LEFT_PAREN, "Expect '(' after a 'while'");
+    Expr* condition = expression();
+
+    consume(RIGHT_PAREN, "Expect ')' after a condition" );
+
+    Stmt* body = statement();
+    return new While(condition, body);
+}
+
+Stmt*
+Parser::ifStatement()
+{
+    consume(LEFT_PAREN, "Expect '(' after an 'if'");
+    Expr* condition = expression();
+
+    consume(RIGHT_PAREN, "Expect ')' after an if condition" );
+
+    Stmt* ifBranch = statement();
+    Stmt* elseBranch = NULL;
+
+    list<TokenType> t;
+    t.push_back(ELSE);
+    
+    if(match(t)) elseBranch = statement();
+
+    return new If(condition, ifBranch, elseBranch);
 }
 
 Stmt* 
@@ -176,7 +276,9 @@ Parser::block()
 Expr* 
 Parser::assignment()
 {
-    Expr* expr = equality();
+    //Expr* expr = equality();
+    Expr* expr = logicOr();
+
     list<TokenType> token_types;
     token_types.push_back(EQUAL);
 
@@ -195,6 +297,42 @@ Parser::assignment()
 
         throw invalid_argument("Error in Variable casting on Expr. Location: assignment() " );
     }
+    return expr;
+}
+
+Expr*
+Parser::logicOr() // like Binary
+{
+    Expr *expr = logicAnd();
+
+    list<TokenType> t;
+    t.push_back(OR);
+
+    while(match(t))
+    {
+        Token op = getToken(current-1);
+        Expr *r = logicAnd();
+        expr = new Logical(expr, op, r);
+    }
+
+    return expr;
+}
+
+Expr*
+Parser::logicAnd()
+{
+    Expr* expr = equality();
+
+    list<TokenType> t;
+    t.push_back(AND);
+
+    while(match(t))
+    {
+        Token op = getToken(current-1);
+        Expr *r = equality();
+        expr = new Logical(expr, op, r);
+    }
+
     return expr;
 }
 

@@ -1,5 +1,7 @@
-var a = 1;
-{
-  var a = a + 2;
-  print a;
-}
+
+var i = 11;
+  for (var b = 0; b < i; b=b+1) {
+    print b;
+  }
+  
+  print i;

@@ -115,13 +115,13 @@ class If : public Stmt
 {
     public:
         Expr* condition;
-        Stmt* thenBranch;
+        Stmt* ifBranch;
         Stmt* elseBranch;
 
     If(Expr* c, Stmt* tb, Stmt* eb)
     {
         condition = c;
-        thenBranch = tb;
+        ifBranch = tb;
         elseBranch = eb;
     }
 
