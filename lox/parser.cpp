@@ -108,7 +108,7 @@ Parser::declaration()
 {
     try
     {
-        cout << "Entered declaration()" << endl;
+        //cout << "Entered declaration()" << endl;
         list<TokenType> tt;
         tt.push_back(VAR);
         if (match(tt)) return varDeclaration();
@@ -123,7 +123,7 @@ Parser::declaration()
 Stmt* 
 Parser::varDeclaration()
 {
-    cout << "   Entered varDeclaration()" << endl;
+    //cout << "   Entered varDeclaration()" << endl;
     Token n = consume(IDENTIFIER, "Expect a variable name. ");
     Expr* init = NULL;
 
@@ -285,13 +285,13 @@ Parser::assignment()
     if (match(token_types))
     {
         Token e = getToken(current-1); 
-        cout << "Token in assignment: " << e.tokenLiteral() << endl;
+        //cout << "Token in assignment: " << e.tokenLiteral() << endl;
         Expr* v = assignment();
         if(dynamic_cast<const Variable*>(expr) != nullptr)
         {
             Variable *vr = dynamic_cast< Variable*>(expr);
             Token n = vr->name;
-            cout << "Token for Assign: " << n.tokenLiteral() << endl;
+            //cout << "Token for Assign: " << n.tokenLiteral() << endl;
             return new Assign(n, v);
         }
 
@@ -339,7 +339,7 @@ Parser::logicAnd()
 Expr* 
 Parser::equality()
 {
-    cout << "Equality -->";
+    //cout << "Equality -->";
     Expr* expr = comparison();
     
     //exit(1);
@@ -349,15 +349,15 @@ Parser::equality()
 
     while(match(tt))
     {
-        cout << "   enter equality match " << endl;
+        //cout << "   enter equality match " << endl;
         Token op = getToken(current-1);
-        cout << "   Operator:" << op.tokenLiteral() << endl;  
+        //cout << "   Operator:" << op.tokenLiteral() << endl;  
 
         
         Expr* r = comparison();
         
         //exit(1);
-        cout << "   creating Binary" << endl;
+        //cout << "   creating Binary" << endl;
         expr = new Binary(expr, op, r);
         //string temp = e;
         //e = "";
@@ -370,7 +370,7 @@ Parser::equality()
 Expr* 
 Parser::comparison()
 {
-    cout << "Comparison -->";
+    //cout << "Comparison -->";
 
     Expr* expr = term();
     
@@ -397,7 +397,7 @@ Parser::comparison()
 Expr* 
 Parser::term()
 {
-    cout << "Term -->";
+    //cout << "Term -->";
     Expr* expr = factor();
     
     list<TokenType> tt;
@@ -421,7 +421,7 @@ Parser::term()
 Expr*
 Parser::factor()
 {
-    cout << "Factor -->";
+    //cout << "Factor -->";
     Expr* expr = unary();
     
     list<TokenType> tt;
@@ -445,14 +445,14 @@ Parser::factor()
 Expr*
 Parser::unary()
 {
-    cout << "Unary -->";
+    //cout << "Unary -->";
     list<TokenType> tt;
     tt.push_back(BANG);
     tt.push_back(MINUS);
 
     while(match(tt))
     {   
-        cout << "match Unary" << endl;
+        //cout << "match Unary" << endl;
         Token op = getToken(current-1);
         Expr* r = unary();
         
@@ -466,26 +466,37 @@ Parser::unary()
 Expr*
 Parser::primary()
 {
-    cout << "Primary" << endl;
+    //cout << "Primary" << endl;
     list<TokenType> t1, t2, t3, t4, t5;
     
     t1.push_back(FALSE);
-    if(match(t1)){cout << " False" << endl; return new Literal("FALSE");}
+    if(match(t1))
+    {//cout << " False" << endl; 
+    return new Literal("FALSE");}
 
     t2.push_back(TRUE);
-    if(match(t2)){cout << " True" << endl; return new Literal("TRUE");}
+    if(match(t2))
+    {//cout << " True" << endl; 
+    return new Literal("TRUE");}
 
     t3.push_back(NIL);
-    if(match(t3)) {cout << " NIL" << endl; return new Literal("NIL");}
+    if(match(t3)) 
+    {//cout << " NIL" << endl; 
+    return new Literal("NIL");}
 
     list<TokenType> tt;
     tt.push_back(NUMBER);
     tt.push_back(STRING);
     if(match(tt))
     {
-        cout << "   matched NUMBER/STRING: " << endl; 
-        cout << "   Current:" << this->current << endl;
+        //cout << "   matched NUMBER/STRING: " << endl; 
+        //cout << "   Current:" << this->current << endl;
         Token temp = getToken(current-1);
+        if (temp.tokenType() == "STRING")
+        {
+            string s = temp.tokenLiteral().substr(1, temp.tokenLiteral().length()-2);
+            return new Literal(s);
+        } 
         //cout << " --" << temp.tokenLiteral() <<"--" << (current-1) << endl;
         return new Literal(temp.tokenLiteral());
     }
@@ -496,8 +507,8 @@ Parser::primary()
     t5.push_back(LEFT_PAREN);
     if(match(t5))
     {
-        cout << "   matched LEFT_PAREN" << endl;
-        cout << "   Current:" << this->current << endl<< endl;
+        //cout << "   matched LEFT_PAREN" << endl;
+        //cout << "   Current:" << this->current << endl<< endl;
 
         Expr* expr = expression();
         consume(RIGHT_PAREN, "Expect ')' after expression" );
@@ -534,13 +545,13 @@ Parser::check(TokenType t)
 void
 Parser::advanceToken()
 {
-    cout << "   Enter advanceToken()" << endl;
+    //cout << "   Enter advanceToken()" << endl;
     if(isNotEnd())
     {
         this->current += 1;
     }
     else {
-        cout << "isEnd" << endl;
+        //cout << "isEnd" << endl;
     } 
 }
 
@@ -566,14 +577,14 @@ Parser::peek()
         }
         tokenIndexCounter += 1;
     }
-    cout << "       not found" << endl;
+    //cout << "       not found" << endl;
     return Token();
 }
 
 Token 
 Parser::getToken(int index)
 {   
-    cout << "   Entered getToken(" << index << ")" << endl;
+    //cout << "   Entered getToken(" << index << ")" << endl;
     list<Token>::iterator i;
     int tokenIndexCounter = 0;
     for (i = tokens.begin(); i != tokens.end(); i++)
@@ -585,7 +596,7 @@ Parser::getToken(int index)
         
         if(tokenIndexCounter == (index))
         {
-            cout << "       return = " << (*i).tokenLiteral() << endl;
+            //cout << "       return = " << (*i).tokenLiteral() << endl;
             return *i;
         }
         tokenIndexCounter += 1;

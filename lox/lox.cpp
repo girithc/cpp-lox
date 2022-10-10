@@ -2,8 +2,8 @@
 #include <string>
 #include <fstream>
 #include <iterator>
-//#include "testScanner.h"
-#include "scanner.cpp"
+#include "testScanner.cpp"
+//#include "scanner.cpp"
 
 using namespace std;
 
@@ -109,7 +109,16 @@ class Lox
     int main(int argc, char** argv)
     {   
         Lox lox;
-        if (argc == 2 && strcmp(argv[1],"test")==0)
+        if (argc == 2 && strcmp(argv[1],"scanner")==0)
+        {
+            cout << "Testing Scanner..." << endl; 
+            testScanner();
+        } 
+        else if (argc == 2 && strcmp(argv[1],"parser")==0)
+        {
+            //testScanner();
+        } 
+        else if (argc == 2 && strcmp(argv[1],"interpreter")==0)
         {
             //testScanner();
         } 

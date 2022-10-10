@@ -32,17 +32,17 @@ Environment::Environment(Environment* e)
 void
 Environment::define(string name, string value)
 {
-    cout << "Entered define{" << name << "," << value << "}" << endl;
+    //cout << "Entered define{" << name << "," << value << "}" << endl;
     valueMap.insert({{name, value}});
 }
 
 string
 Environment::getItem(Token name)
 {
-    cout << "Enter getItem:" << name.tokenLiteral() << endl;
+    //cout << "Enter getItem:" << name.tokenLiteral() << endl;
     if(valueMap.find(name.tokenLiteral()) != valueMap.end())
     {
-        cout << "Found " << endl;
+        //cout << "Found " << endl;
         return valueMap[name.tokenLiteral()];
     } 
     if (enclosing) return enclosing->getItem(name);
@@ -53,10 +53,10 @@ Environment::getItem(Token name)
 void
 Environment::assign(Token name, string value)
 {
-    cout << "Entered env Assign" << endl;
+    //cout << "Entered env Assign" << endl;
     if(valueMap.find(name.tokenLiteral()) != valueMap.end())
     {
-        cout << "Changing key value in map: " << value << endl;
+        //cout << "Changing key value in map: " << value << endl;
         unordered_map <string, string>::iterator i = valueMap.find(name.tokenLiteral());
         i->second = value;
         return;
