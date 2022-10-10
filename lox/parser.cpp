@@ -497,6 +497,10 @@ Parser::primary()
             string s = temp.tokenLiteral().substr(1, temp.tokenLiteral().length()-2);
             return new Literal(s);
         } 
+        else
+        {
+            
+        }
         //cout << " --" << temp.tokenLiteral() <<"--" << (current-1) << endl;
         return new Literal(temp.tokenLiteral());
     }

@@ -3,6 +3,7 @@
 #include <fstream>
 #include <iterator>
 #include "testScanner.cpp"
+
 //#include "scanner.cpp"
 
 using namespace std;
@@ -121,6 +122,7 @@ class Lox
         else if (argc == 2 && strcmp(argv[1],"interpreter")==0)
         {
             //testScanner();
+            testWhileStatement();
         } 
         else if (argc > 2)
         {

@@ -1,20 +1,22 @@
 
-var i = 1;
-  for (var a = 0; i < 3; a=a+1) {
-    i =a;
-    print a;
+var i = 2;
+  for (var a = 0; a < i; a=a+1) {
+    print "For loop " + a;
   }
   
   print i;
 
 var a = 1;
-while(a > 0)
+var x= 5;
+while(a < 5)
 {
-  a = i;
-  i = i -1;
+
   print a;
+  a= a+1;
 
 }
 
 if ( a < 1) print "a is less than 1: a =" + a;
 else print "a is greater than 1";
+
+if(!nil)print true and false;

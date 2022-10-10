@@ -1,5 +1,5 @@
 
-#include "scanner.cpp"
+#include "testParserAndInterpreter.cpp"
 #include <iostream>
 #include <cassert>
 #include <string>
