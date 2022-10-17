@@ -72,6 +72,7 @@ class Parser{
         Expr* assignment();
         Expr* logicOr();
         Expr* logicAnd();
+        Expr* call();
 
         //parsing stmt
         Stmt* statement();
@@ -459,9 +460,48 @@ Parser::unary()
         return new Unary(op, r);
         // return (op.tokenLiteral() + "," + r);
     }
-    
-    return primary();
+    return call();
+    //return primary();
 }
+
+Expr*
+Parser::finishCall(Expr* callee)
+{
+    list<Expr*> args;
+    if(!check(RIGHT_PAREN))
+    {
+        list<TokenType>tt;
+        tt.push_back(RIGHT_PAREN);
+        do
+        {
+            args.push_back(expression())
+        } while (match(tt));
+    }
+
+    Token p = consume(RIGHT_PAREN, "Expect ')' after args");
+    return new Call(callee, p, args);
+}
+
+Expr* 
+Parser::call()
+{
+    Expr* expr = primary;
+    while(1)
+    {
+        list<TokenType>tt;
+        tt.push_back(LEFT_PAREN);
+        if(match(tt))
+        {
+            expr = finishCall(expr);
+        }
+        else
+        {
+            break;
+        }
+    }
+    return expr;
+}
+
 
 Expr*
 Parser::primary()
