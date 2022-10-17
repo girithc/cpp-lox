@@ -91,6 +91,24 @@ class Interpreter : public Visitor, VisitorStmt
             return "";
         }
 
+        string VisitCallExpr(Call* expr)
+        {
+            string callee = eval(expr->callee);
+            list<string> args;
+
+            list<Expr*>::iterator itr;
+            for (itr = expr->arguments.begin(); itr != expr->arguments.end(); itr = itr + 1)
+            {
+                args.push_back(eval(*itr));
+            }
+
+
+            //LoxCallable function = (LoxCallable)callee;
+            //return function.call(this, arguments);
+
+            return "abc";
+        }
+
         string VisitExpressionStmt(Expression* stmt) override
         {
             string e = eval(stmt->expression);
