@@ -474,6 +474,11 @@ Parser::finishCall(Expr* callee)
         tt.push_back(RIGHT_PAREN);
         do
         {
+            if(args.size() > 255)
+            {
+                cout << "Arguments limit is 255" << endl;
+                exit(1);
+            }
             args.push_back(expression())
         } while (match(tt));
     }
