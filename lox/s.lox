@@ -20,3 +20,11 @@ if ( a < 1) print "a is less than 1: a =" + a;
 else print "a is greater than 1";
 
 if(!nil)print true and false;
+var yolo=1;
+{
+  var yaa = x+1;
+  var yolo = yolo+1;
+  print yolo;
+}
+
+print yolo;

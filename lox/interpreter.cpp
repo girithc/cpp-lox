@@ -1,9 +1,10 @@
-#include "stmt.cpp"
+#include "loxFunction.cpp"
 #include <string>
 #include <string.h>
 #include <list>
 #include <iterator>
 
+class LoxCallable;
 
 class Interpreter : public Visitor, VisitorStmt
 {
@@ -91,22 +92,23 @@ class Interpreter : public Visitor, VisitorStmt
             return "";
         }
 
-        string VisitCallExpr(Call* expr)
+        string VisitCallExpr(Call* expr) override
         {
             string callee = eval(expr->callee);
             list<string> args;
 
-            list<Expr*>::iterator itr;
-            for (itr = expr->arguments.begin(); itr != expr->arguments.end(); itr = itr + 1)
+            list<Expr*>::iterator i;
+            for (i = expr->arguments.begin(); 
+            i != expr->arguments.end(); i++)
             {
-                args.push_back(eval(*itr));
+                args.push_back(eval(*i));
             }
 
 
-            //LoxCallable function = (LoxCallable)callee;
+            LoxCallable* function;
             //return function.call(this, arguments);
 
-            return "abc";
+            return function->Call(this,args);
         }
 
         string VisitExpressionStmt(Expression* stmt) override
@@ -168,25 +170,11 @@ class Interpreter : public Visitor, VisitorStmt
 
         string VisitBlockStmt(Block* stmt) override
         {
-            list<Stmt*> s = stmt->stmts;
-            Environment *envtemp = env;
-
-                try
-                {
-                    env = new Environment(env);
-                    list<Stmt*>::iterator i;
-                    for (i = s.begin(); i != s.end(); i++)
-                    {
-                        execute(*i);
-                    }
-                }
-                catch(exception e)
-                {
-                    std::cerr << e.what() << '\n';
-                }
-            env = envtemp;
+            executeBlock(stmt->stmts, new Environment(env));
+            //list<Stmt*> s = stmt->stmts;
+            //Environment *envtemp = env;
+           
             return "";
-            
         }
         
 
@@ -207,6 +195,27 @@ class Interpreter : public Visitor, VisitorStmt
             } catch (...) {
                 cout << "Error in interpreter" << endl;
             }
+        }
+
+        void executeBlock(list<Stmt*> s, Environment* e)
+        {
+
+            Environment* prev = env;
+                try
+                {
+                    env = e;
+                    list<Stmt*>::iterator i;
+                    for (i = s.begin(); i != s.end(); i++)
+                    {
+                        execute(*i);
+                    }
+                }
+                catch(exception e)
+                {
+                    std::cerr << e.what() << '\n';
+                }
+            env = prev;
+            return;
         }
 
     private:

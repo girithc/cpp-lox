@@ -1,8 +1,9 @@
 #include <string>
+#include "stmt.cpp"
 
 using namespace std;
 
-
+class Interpreter;
 
 class LoxCallable
 {
@@ -10,5 +11,5 @@ class LoxCallable
         virtual ~LoxCallable(){};
         virtual string Call(Interpreter* interpreter, 
                             list<string> args){return "";};
-        virtual int arity(){return 0;};
+        virtual string arity(){return "";};
 };

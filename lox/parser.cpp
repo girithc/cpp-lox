@@ -73,6 +73,7 @@ class Parser{
         Expr* logicOr();
         Expr* logicAnd();
         Expr* call();
+        Expr* finishCall(Expr* callee);
 
         //parsing stmt
         Stmt* statement();
@@ -85,6 +86,8 @@ class Parser{
         Stmt* declaration();
         Stmt* varDeclaration();
         list<Stmt*> block();
+
+        Function* function(string kind);
 
 
         //panic mode
@@ -110,7 +113,9 @@ Parser::declaration()
     try
     {
         //cout << "Entered declaration()" << endl;
-        list<TokenType> tt;
+        list<TokenType> tt,tt1;
+        tt1.push_back(FUN);
+        if(match(tt1)) return function("function");
         tt.push_back(VAR);
         if (match(tt)) return varDeclaration();
         return statement();
@@ -260,6 +265,30 @@ Parser::expressionStatement()
     Expr* expr = expression();
     consume(SEMICOLON,"Expect ';' after expression.");
     return new Expression(expr);
+}
+
+Function*
+Parser::function(string kind)
+{
+    Token n = consume(IDENTIFIER, "Expect " + kind + "name.");
+    Token u = consume(LEFT_PAREN, "Expect '(' after " + kind + " name.");
+    list<Token> parameters;
+    list<TokenType> tt;
+    tt.push_back(COMMA);
+    if (!check(RIGHT_PAREN)) {
+      do {
+        // (parameters.size() >= 255) {
+          //error(peek(), "Can't have more than 255 parameters.");
+        //}
+
+        parameters.push_back(consume(IDENTIFIER, "Expect parameter name."));
+      } while (match(tt));
+    }
+    Token x = consume(RIGHT_PAREN, "Expect ')' after parameters.");
+
+    consume(LEFT_BRACE, "Expect '{' before " + kind + " body.");
+    list<Stmt* > body = block();
+    return new Function(n, parameters, body);
 }
 
 list<Stmt*>
@@ -479,7 +508,7 @@ Parser::finishCall(Expr* callee)
                 cout << "Arguments limit is 255" << endl;
                 exit(1);
             }
-            args.push_back(expression())
+            args.push_back(expression());
         } while (match(tt));
     }
 
@@ -490,7 +519,7 @@ Parser::finishCall(Expr* callee)
 Expr* 
 Parser::call()
 {
-    Expr* expr = primary;
+    Expr* expr = primary();
     while(1)
     {
         list<TokenType>tt;
