@@ -1,10 +1,37 @@
-#include "loxFunction.cpp"
+#include "stmt.cpp"
 #include <string>
 #include <string.h>
 #include <list>
 #include <iterator>
 
-class LoxCallable;
+class Interpreter;
+class LoxCallable
+{
+    public:
+        virtual ~LoxCallable(){};
+        virtual string Call(Interpreter* interpreter, 
+                            list<string> args){return "";};
+        virtual string arity(){return "";};
+};
+class LoxFunction : public LoxCallable
+{
+    private:
+        Function* declaration;
+    public:
+        LoxFunction(Function* d)
+        {
+            declaration = d;
+        }
+
+        string Call(Interpreter* interpreter, list<string> args);
+};
+
+
+string
+LoxFunction::Call(Interpreter* interpreter, list<string> args)
+{
+    return "abc";
+}
 
 class Interpreter : public Visitor, VisitorStmt
 {
