@@ -1,0 +1,6 @@
+fun add(a, b, c) {
+  print a + b + c;
+  return a;
+}
+
+add(1, 2, 3);

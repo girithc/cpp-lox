@@ -23,8 +23,10 @@ if(!nil)print true and false;
 var yolo=1;
 {
   var yaa = x+1;
-  var yolo = yolo+1;
+  var yolo = yaa+yolo;
   print yolo;
 }
 
 print yolo;
+
+

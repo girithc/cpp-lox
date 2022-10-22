@@ -169,12 +169,12 @@ class Var : public Stmt
 {
     public:
         Token name;
-        Expr* intializer;
+        Expr* init;
 
         Var(Token n, Expr* i)
         {
             name = n;
-            intializer = i;
+            init = i;
         }
 
         string Accept(VisitorStmt* visitor)

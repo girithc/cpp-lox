@@ -38,13 +38,14 @@ class Interpreter : public Visitor, VisitorStmt
     public:
         string VisitLiteralExpr(Literal *expr) override
         {
-            //cout << "Entered VisitLiteralExpr: " << expr->value << endl;
+            cout << "Entered VisitLiteralExpr() " << expr->value << endl;
             //cout << "Expr.value: " << expr->value << endl;
             return expr->value;
         }
 
         string VisitLogicalExpr(Logical* expr) override
         {
+            cout << "Enter VisitLogicalExpr()" << endl;
             string l = eval(expr->left);
 
             if(expr->op.tokenType() == "OR")
@@ -61,13 +62,13 @@ class Interpreter : public Visitor, VisitorStmt
 
         string VisitGroupingExpr(Grouping *expr) override
         {
-            //cout << "Entered VisitGroupingExpr" << endl;
+            cout << "Entered VisitGroupingExpr" << endl;
             return eval(expr->expression);
         }
 
         string VisitUnaryExpr(Unary *expr) override
         {
-            //cout << "Entered VisitUnaryExpr" << endl;
+            cout << "Entered VisitUnaryExpr" << endl;
             string r = eval(expr->right);
 
             if (expr->op.tokenType() == "MINUS") return r;
@@ -78,14 +79,14 @@ class Interpreter : public Visitor, VisitorStmt
 
         string VisitVariableExpr(Variable* expr) override
         {
-            //cout << "Entered VisitVariableExpr: " << expr->name.tokenLiteral() << endl;
+            cout << "Entered VisitVariableExpr: " << expr->name.tokenLiteral() << endl;
             return env->getItem(expr->name);
         }
 
 
         string VisitAssignExpr(Assign* expr) override
         {
-            //cout << "Entered VisitAssignExpr" << endl;
+            cout << "Entered VisitAssignExpr" << endl;
             string v = eval(expr->value);
             //cout << "   new Value: " << v << endl;
             env->assign(expr->name, v);
@@ -94,7 +95,7 @@ class Interpreter : public Visitor, VisitorStmt
 
         string VisitBinaryExpr(Binary *expr) override
         {
-            //cout << "Entered VisitBinaryExpr" << endl;
+            cout << "Entered VisitBinaryExpr" << endl;
             string l = eval(expr->left);
             string r = eval(expr->right);
             
@@ -121,7 +122,9 @@ class Interpreter : public Visitor, VisitorStmt
 
         string VisitCallExpr(Call* expr) override
         {
-            string callee = eval(expr->callee);
+            cout << "Enter VisitCallExpr()" << endl;
+            string c = eval(expr->callee);
+            cout << "   callee" << c << endl;
             list<string> args;
 
             list<Expr*>::iterator i;
@@ -140,13 +143,14 @@ class Interpreter : public Visitor, VisitorStmt
 
         string VisitExpressionStmt(Expression* stmt) override
         {
+            cout << "Entered VisitExpressionStmt()" << endl;
             string e = eval(stmt->expression);
             return "";
         }
         
         string VisitWhileStmt(While* stmt) override
         {
-            //cout << "Entered VisitWhileStmt" << endl;
+            cout << "Entered VisitWhileStmt" << endl;
             int i = 0;
             while(notTrue(eval(stmt->condition)) == "false")
             {
@@ -162,7 +166,7 @@ class Interpreter : public Visitor, VisitorStmt
 
         string VisitIfStmt(If* stmt) override
         {
-            //cout << "Enter if statement()" << endl;
+            cout << "Enter VisitIfStatement()" << endl;
             if(notTrue(eval(stmt->condition)) == "false")
             {
                 //cout << "   Enter ifBranch" << endl;
@@ -177,7 +181,7 @@ class Interpreter : public Visitor, VisitorStmt
 
         string VisitPrintStmt(Print* stmt) override
         {
-            //cout << "   Entered VisitPrintStmt" << endl;
+            cout << "   Entered VisitPrintStmt" << endl;
             string v = eval(stmt->expression);
             cout  << v << endl;
             
@@ -186,10 +190,10 @@ class Interpreter : public Visitor, VisitorStmt
 
         string VisitVarStmt(Var* stmt) override
         {
-            //cout << "Entered VisitVarStmt " << endl;
+            cout << "Entered VisitVarStmt " << endl;
             string v = "";
-            if(stmt->intializer)
-            {   v = eval(stmt->intializer);} 
+            if(stmt->init)
+            {   v = eval(stmt->init);} 
 
             env->define(stmt->name.tokenLiteral(), v);
             return "";
@@ -197,6 +201,8 @@ class Interpreter : public Visitor, VisitorStmt
 
         string VisitBlockStmt(Block* stmt) override
         {
+            cout << "Entered VisitBlockStmt " << endl;
+
             executeBlock(stmt->stmts, new Environment(env));
             //list<Stmt*> s = stmt->stmts;
             //Environment *envtemp = env;
@@ -210,13 +216,15 @@ class Interpreter : public Visitor, VisitorStmt
             try {
                 //string value = eval(expr);
                 //cout << "Eval: " <<  value << endl;
+                cout << "Enter interpret()" << endl;
                 list<Stmt*>::iterator i;
                 int counter = 0;
                 for (i = stmts.begin(); i != stmts.end(); i++)
                 {
-                    counter++;
-                    //cout << "c: " << counter << endl;
+                    
+                    cout << "executing " << "counter=" << counter << endl;
                     execute(*i);
+                    counter++;
                 }
 
             } catch (...) {
@@ -252,6 +260,7 @@ class Interpreter : public Visitor, VisitorStmt
         {
             //cout << "   Entered execute" << endl;
             string r = stmt->Accept(this);
+            cout << "Done executing " << endl << endl; 
         }
 
         string eval(Expr *expr)
