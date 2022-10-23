@@ -147,6 +147,15 @@ class Interpreter : public Visitor, VisitorStmt
             string e = eval(stmt->expression);
             return "";
         }
+
+        string VisitFunctionStmt(Function* stmt) override
+        {
+            cout << "Entered VisitFunctionStmt()" << endl;
+            LoxFunction loxFunc(stmt);
+            cout << "   " << stmt->name.tokenLiteral() << endl;
+            //env->define(stmt->name.tokenLiteral(), loxFunc);
+            return "";
+        }
         
         string VisitWhileStmt(While* stmt) override
         {
