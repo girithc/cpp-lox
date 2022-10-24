@@ -3,6 +3,7 @@
 #include <string.h>
 #include <list>
 #include <iterator>
+#include <unordered_map>
 
 class Interpreter;
 class LoxCallable
@@ -31,6 +32,78 @@ string
 LoxFunction::Call(Interpreter* interpreter, list<string> args)
 {
     return "abc";
+}
+
+class Environment
+{
+    public:
+        Environment* enclosing;
+        Environment();
+        Environment(Environment* e);
+        void define(string name, string value);
+        void defineLoxFunction(string name, LoxFunction* value);
+        string getItem(Token name);
+        void assign(Token name, string value);
+    private:
+        unordered_map <string, string> valueMap;
+        unordered_map <string, LoxFunction*> valueMapLoxFunction;
+
+};
+Environment::Environment()
+{
+    enclosing = NULL;
+}
+Environment::Environment(Environment* e)
+{
+    enclosing = e;
+}
+void
+Environment::define(string name, string value)
+{
+    //cout << "Entered define{" << name << "," << value << "}" << endl;
+    valueMap.insert({{name, value}});
+}
+void
+Environment::defineLoxFunction(string name, LoxFunction* value)
+{
+    //cout << "Entered define{" << name << "," << value << "}" << endl;
+    string l= "loxFunction";
+    define(name,l);
+    cout << name << " " << value << endl;
+    valueMapLoxFunction.insert({{name, value}});
+    cout << name << " " << valueMapLoxFunction[name] << endl;;
+}
+string
+Environment::getItem(Token name)
+{
+    //cout << "Enter getItem:" << name.tokenLiteral() << endl;
+    if(valueMap.find(name.tokenLiteral()) != valueMap.end())
+    {
+        //cout << "Found " << endl;
+        return valueMap[name.tokenLiteral()];
+    } 
+    if (enclosing) return enclosing->getItem(name);
+
+    throw invalid_argument("Environment error");
+}
+void
+Environment::assign(Token name, string value)
+{
+    //cout << "Entered env Assign" << endl;
+    if(valueMap.find(name.tokenLiteral()) != valueMap.end())
+    {
+        //cout << "Changing key value in map: " << value << endl;
+        unordered_map <string, string>::iterator i = valueMap.find(name.tokenLiteral());
+        i->second = value;
+        return;
+    }
+
+    if (enclosing)
+    {
+        enclosing->assign(name, value);
+        return;
+    }
+    throw invalid_argument("Undefined variable " + name.tokenLiteral() + ".");
 }
 
 class Interpreter : public Visitor, VisitorStmt
@@ -153,7 +226,7 @@ class Interpreter : public Visitor, VisitorStmt
             cout << "Entered VisitFunctionStmt()" << endl;
             LoxFunction loxFunc(stmt);
             cout << "   " << stmt->name.tokenLiteral() << endl;
-            //env->define(stmt->name.tokenLiteral(), loxFunc);
+            env->defineLoxFunction(stmt->name.tokenLiteral(), &loxFunc);
             return "";
         }
         

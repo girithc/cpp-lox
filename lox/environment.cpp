@@ -18,24 +18,20 @@ class Environment
         unordered_map <string, string> valueMap;
 
 };
-
 Environment::Environment()
 {
     enclosing = NULL;
 }
-
 Environment::Environment(Environment* e)
 {
     enclosing = e;
 }
-
 void
 Environment::define(string name, string value)
 {
     //cout << "Entered define{" << name << "," << value << "}" << endl;
     valueMap.insert({{name, value}});
 }
-
 string
 Environment::getItem(Token name)
 {
@@ -49,7 +45,6 @@ Environment::getItem(Token name)
 
     throw invalid_argument("Environment error");
 }
-
 void
 Environment::assign(Token name, string value)
 {
