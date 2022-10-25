@@ -21,6 +21,7 @@ class LoxCallable
 class LoxFunction : public LoxCallable
 {
     private:
+        any returnValue;
         
     public:
         Function* declaration;
@@ -117,14 +118,8 @@ string LoxFunction::Call(Interpreter* interpreter, list<string> args)
         iArgs++;
     }
 
-    try
-    {
-        interpreter->executeBlock(declaration->body, env);
-    }
-    catch(Return* v)
-    {
-        cout << "loxreturn>" << v->value << endl;
-    }
+    interpreter->executeBlock(declaration->body, env);
+    
     
 
     return "";
@@ -356,6 +351,7 @@ string Interpreter::VisitPrintStmt(Print* stmt)
 }
 string Interpreter::VisitReturnStmt(Return* stmt)
 {
+    cout << "Enter VisitReturnStmt" << endl;
     return "Return()";
 }
 string Interpreter::VisitVarStmt(Var* stmt) 
