@@ -4,6 +4,5 @@ parser
 interpreter
 stmt
 expr
-environment
 token
 tokentype
