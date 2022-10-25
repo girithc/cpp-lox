@@ -13,17 +13,20 @@ class LoxCallable
         virtual ~LoxCallable(){};
         virtual string Call(Interpreter* interpreter, 
                             list<string> args){return "";};
-        virtual string arity(){return "";};
+        virtual int arity(){return 0;};
+        virtual string toString(){return "";};
 };
 class LoxFunction : public LoxCallable
 {
     private:
-        Function* declaration;
+        
     public:
+        Function* declaration;
         LoxFunction(Function* d);
-        string Call(Interpreter* interpreter, list<string> args);
+        string Call(Interpreter* interpreter, list<string> args) override;
+        int arity() override;
+        string toString() override;
 };
-
 class Environment
 {
     public:
@@ -33,13 +36,13 @@ class Environment
         void define(string name, string value);
         void defineLoxFunction(string name, LoxFunction* value);
         string getItem(Token name);
+        LoxFunction* getLoxFunction(string name);
         void assign(Token name, string value);
     private:
         unordered_map <string, string> valueMap;
         unordered_map <string, LoxFunction*> valueMapLoxFunction;
 
 };
-
 class Interpreter : public Visitor, VisitorStmt
 {
     public:
@@ -81,10 +84,9 @@ LoxFunction::LoxFunction(Function* d)
 {
     declaration = d;
 }
-
-string
-LoxFunction::Call(Interpreter* interpreter, list<string> args)
+string LoxFunction::Call(Interpreter* interpreter, list<string> args)
 {
+    cout << "Enter LoxFunction::Call" << endl;
     Environment *env = new Environment(interpreter->globals);
 
     list<Token>::iterator iParams = declaration->params.begin();
@@ -92,11 +94,16 @@ LoxFunction::Call(Interpreter* interpreter, list<string> args)
     for (int i = 0; i < declaration->params.size(); i++)
     {
         env->define((*iParams).tokenLiteral(), (*iArgs));
+        iParams++;
+        iArgs++;
     }
 
     interpreter->executeBlock(declaration->body, env);
     return "";
 }
+string LoxFunction::toString(){ return "<fn " + declaration->name.tokenLiteral() + ">";}
+int LoxFunction::arity(){ return declaration->params.size();}
+
 
 Environment::Environment()
 {
@@ -106,14 +113,12 @@ Environment::Environment(Environment* e)
 {
     enclosing = e;
 }
-void
-Environment::define(string name, string value)
+void Environment::define(string name, string value)
 {
-    //cout << "Entered define{" << name << "," << value << "}" << endl;
+    cout << "env> Entered define{" << name << "," << value << "}" << endl;
     valueMap.insert({{name, value}});
 }
-void
-Environment::defineLoxFunction(string name, LoxFunction* value)
+void Environment::defineLoxFunction(string name, LoxFunction* value)
 {
     //cout << "Entered define{" << name << "," << value << "}" << endl;
     string l= "loxFunction";
@@ -122,21 +127,32 @@ Environment::defineLoxFunction(string name, LoxFunction* value)
     valueMapLoxFunction.insert({{name, value}});
     cout << name << " " << valueMapLoxFunction[name] << endl;;
 }
-string
-Environment::getItem(Token name)
+string Environment::getItem(Token name)
 {
     //cout << "Enter getItem:" << name.tokenLiteral() << endl;
     if(valueMap.find(name.tokenLiteral()) != valueMap.end())
     {
         //cout << "Found " << endl;
+        if(valueMap[name.tokenLiteral()]=="loxFunction") return name.tokenLiteral()+","+"loxFunction";
         return valueMap[name.tokenLiteral()];
     } 
     if (enclosing) return enclosing->getItem(name);
 
     throw invalid_argument("Environment error");
 }
-void
-Environment::assign(Token name, string value)
+LoxFunction* Environment::getLoxFunction(string name)
+{
+    //cout << "Enter getItem:" << name.tokenLiteral() << endl;
+    if(valueMapLoxFunction.find(name) != valueMapLoxFunction.end())
+    {
+        //cout << "Found " << endl;
+        return valueMapLoxFunction[name];
+    } 
+    if (enclosing) return enclosing->getLoxFunction(name);
+
+    throw invalid_argument("Environment error");
+}
+void Environment::assign(Token name, string value)
 {
     //cout << "Entered env Assign" << endl;
     if(valueMap.find(name.tokenLiteral()) != valueMap.end())
@@ -161,7 +177,6 @@ string Interpreter::VisitLiteralExpr(Literal *expr)
     //cout << "Expr.value: " << expr->value << endl;
     return expr->value;
 }
-
 string Interpreter::VisitLogicalExpr(Logical* expr) 
 {
     cout << "Enter VisitLogicalExpr()" << endl;
@@ -178,13 +193,11 @@ string Interpreter::VisitLogicalExpr(Logical* expr)
 
     return eval(expr->right);
 }
-
 string Interpreter::VisitGroupingExpr(Grouping *expr) 
 {
     cout << "Entered VisitGroupingExpr" << endl;
     return eval(expr->expression);
 }
-
 string Interpreter::VisitUnaryExpr(Unary *expr) 
 {
     cout << "Entered VisitUnaryExpr" << endl;
@@ -195,14 +208,11 @@ string Interpreter::VisitUnaryExpr(Unary *expr)
 
     return "";      
 }
-
 string Interpreter::VisitVariableExpr(Variable* expr) 
 {
     cout << "Entered VisitVariableExpr: " << expr->name.tokenLiteral() << endl;
     return env->getItem(expr->name);
 }
-
-
 string Interpreter::VisitAssignExpr(Assign* expr) 
 {
     cout << "Entered VisitAssignExpr" << endl;
@@ -211,7 +221,6 @@ string Interpreter::VisitAssignExpr(Assign* expr)
     env->assign(expr->name, v);
     return "";
 }
-
 string Interpreter::VisitBinaryExpr(Binary *expr) 
 {
     cout << "Entered VisitBinaryExpr" << endl;
@@ -238,44 +247,48 @@ string Interpreter::VisitBinaryExpr(Binary *expr)
     
     return "";
 }
-
 string Interpreter::VisitCallExpr(Call* expr) 
 {
     cout << "Enter VisitCallExpr()" << endl;
-    string c = eval(expr->callee);
-    cout << "   callee" << c << endl;
-    list<string> args;
-
-    list<Expr*>::iterator i;
-    for (i = expr->arguments.begin(); 
-    i != expr->arguments.end(); i++)
+    string callee = eval(expr->callee);
+    cout << "   Entered VisitCallExpr() again" << endl;
+    LoxFunction* func;
+    
+    string lf = ",loxFunction";
+    if(callee.find(lf) != string::npos)
     {
-        args.push_back(eval(*i));
+        string functionName = callee.substr(0, callee.find(','));
+        func = env->getLoxFunction(functionName);
+        list<string> args;
+
+        list<Expr*>::iterator i;
+        for (i = expr->arguments.begin(); 
+        i != expr->arguments.end(); i++)
+        {
+            args.push_back(eval(*i));
+        }
+        cout << "function param: " ;
+        cout << func->declaration->params.size() << endl;
+
+        func->Call(this,args);
     }
 
-
-    LoxCallable* function;
-    //return function.call(this, arguments);
-
-    return function->Call(this,args);
+    return "";
 }
-
 string Interpreter::VisitExpressionStmt(Expression* stmt) 
 {
     cout << "Entered VisitExpressionStmt()" << endl;
     string e = eval(stmt->expression);
     return "";
 }
-
 string Interpreter::VisitFunctionStmt(Function* stmt) 
 {
     cout << "Entered VisitFunctionStmt()" << endl;
-    LoxFunction loxFunc(stmt);
+    LoxFunction* loxFunc = new LoxFunction(stmt);
     cout << "   " << stmt->name.tokenLiteral() << endl;
-    env->defineLoxFunction(stmt->name.tokenLiteral(), &loxFunc);
-    return "";
+    env->defineLoxFunction(stmt->name.tokenLiteral(), loxFunc);
+    return "NIL";
 }
-
 string Interpreter::VisitWhileStmt(While* stmt) 
 {
     cout << "Entered VisitWhileStmt" << endl;
@@ -291,7 +304,6 @@ string Interpreter::VisitWhileStmt(While* stmt)
     
     return "";
 }
-
 string Interpreter::VisitIfStmt(If* stmt) 
 {
     cout << "Enter VisitIfStatement()" << endl;
@@ -306,16 +318,14 @@ string Interpreter::VisitIfStmt(If* stmt)
 
     return "";
 }
-
 string Interpreter::VisitPrintStmt(Print* stmt) 
 {
     cout << "   Entered VisitPrintStmt" << endl;
     string v = eval(stmt->expression);
-    cout  << v << endl;
+    cout  << "lox>" <<  v << endl;
     
     return "";
 }
-
 string Interpreter::VisitVarStmt(Var* stmt) 
 {
     cout << "Entered VisitVarStmt " << endl;
@@ -326,7 +336,6 @@ string Interpreter::VisitVarStmt(Var* stmt)
     env->define(stmt->name.tokenLiteral(), v);
     return "";
 }
-
 string Interpreter::VisitBlockStmt(Block* stmt)
 {
     cout << "Entered VisitBlockStmt " << endl;
@@ -337,8 +346,6 @@ string Interpreter::VisitBlockStmt(Block* stmt)
     
     return "";
 }
-
-
 void Interpreter::interpret(list<Stmt*> stmts)
 {
     try {
@@ -359,9 +366,6 @@ void Interpreter::interpret(list<Stmt*> stmts)
         cout << "Error in interpreter" << endl;
     }
 }
-
-
-
 void Interpreter::executeBlock(list<Stmt*> s, Environment* e)
 {
 
@@ -377,26 +381,23 @@ void Interpreter::executeBlock(list<Stmt*> s, Environment* e)
         }
         catch(exception e)
         {
+            cout << "Exception in interpreter" << endl;
             std::cerr << e.what() << '\n';
         }
     env = prev;
     return;
 }
-
-
 void Interpreter::execute(Stmt* stmt)
 {
     //cout << "   Entered execute" << endl;
     string r = stmt->Accept(this);
     cout << "Done executing " << endl << endl; 
 }
-
 string Interpreter::eval(Expr *expr)
 {
     //cout << "Entered eval" << endl;
     return expr->Accept(this);
 }
-
 string Interpreter::notTrue(string s)
 {
     //cout << "notTrue (" << s << ")" << endl;
@@ -419,7 +420,6 @@ string Interpreter::notTrue(string s)
     return "false";
 
 }
-
 bool Interpreter::isDouble(string one, string two)
 {
     //cout << "      checking string one" << one;
@@ -440,15 +440,12 @@ bool Interpreter::isDouble(string one, string two)
 
     return true;
 }
-
 bool Interpreter::isString(string one, string two)
 {
     if(isDouble(one, two)) return false;
     return true;
 }
-
 //left to do. Equal and Unequal for null
-
 string Interpreter::compare(string one, string two, string op)
 {   
     if(isString(one, two))
@@ -488,7 +485,6 @@ string Interpreter::compare(string one, string two, string op)
     
     return "false";
 }
-
 string Interpreter::compareString(string one, string two, string op)
 {
     if (op ==">")
