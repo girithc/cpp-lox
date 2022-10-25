@@ -1,5 +1,6 @@
 fun sayHi(first, last, middle) {
   print "Hi "+first+" "+middle+". "+last;
+  return first;
 }
 
-sayHi("Girith", "Choudhary", "m");
+print sayHi("Girith", "Choudhary", "m");

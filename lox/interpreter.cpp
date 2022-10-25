@@ -4,6 +4,8 @@
 #include <list>
 #include <iterator>
 #include <unordered_map>
+#include <stdexcept>
+#include <any>
 
 class Interpreter;
 class Environment;
@@ -43,6 +45,19 @@ class Environment
         unordered_map <string, LoxFunction*> valueMapLoxFunction;
 
 };
+class RunTimeError : public runtime_error
+{
+    public:
+        Token t;
+        RunTimeError(Token t, string message);
+};
+class ReturnFunction : public runtime_error
+{
+    public:
+        string value;
+
+        ReturnFunction(string v);
+};
 class Interpreter : public Visitor, VisitorStmt
 {
     public:
@@ -60,6 +75,7 @@ class Interpreter : public Visitor, VisitorStmt
         string VisitWhileStmt(While* stmt) override;
         string VisitIfStmt(If* stmt) override;
         string VisitPrintStmt(Print* stmt) override;
+        string VisitReturnStmt(Return* stmt) override;
         string VisitVarStmt(Var* stmt) override;
         string VisitBlockStmt(Block* stmt) override;
         
@@ -77,6 +93,9 @@ class Interpreter : public Visitor, VisitorStmt
         void execute(Stmt* stmt);
         bool isDouble(string one, string two);
         bool isString(string one, string two);
+
+        void checkNumberOperand(Token op, any operand);
+        void checkNumberOperandMulti(Token op, any l, any r);
 
 };
 
@@ -98,7 +117,16 @@ string LoxFunction::Call(Interpreter* interpreter, list<string> args)
         iArgs++;
     }
 
-    interpreter->executeBlock(declaration->body, env);
+    try
+    {
+        interpreter->executeBlock(declaration->body, env);
+    }
+    catch(Return* v)
+    {
+        cout << "loxreturn>" << v->value << endl;
+    }
+    
+
     return "";
 }
 string LoxFunction::toString(){ return "<fn " + declaration->name.tokenLiteral() + ">";}
@@ -325,6 +353,10 @@ string Interpreter::VisitPrintStmt(Print* stmt)
     cout  << "lox>" <<  v << endl;
     
     return "";
+}
+string Interpreter::VisitReturnStmt(Return* stmt)
+{
+    return "Return()";
 }
 string Interpreter::VisitVarStmt(Var* stmt) 
 {
