@@ -46,19 +46,15 @@ class Environment
         unordered_map <string, LoxFunction*> valueMapLoxFunction;
 
 };
-class RunTimeError : public runtime_error
+class ReturnRunTime : public runtime_error
 {
     public:
         Token t;
-        RunTimeError(Token t, string message);
+        string returnValue;
+        ReturnRunTime(string val):runtime_error(val){returnValue = val; }
+        ReturnRunTime(Token t, string message);
 };
-class ReturnFunction : public runtime_error
-{
-    public:
-        string value;
 
-        ReturnFunction(string v);
-};
 class Interpreter : public Visitor, VisitorStmt
 {
     public:
@@ -118,7 +114,20 @@ string LoxFunction::Call(Interpreter* interpreter, list<string> args)
         iArgs++;
     }
 
-    interpreter->executeBlock(declaration->body, env);
+    try
+    { 
+        cout << "Executing Function block" << endl;
+        interpreter->executeBlock(declaration->body, env);
+    }
+    catch(ReturnRunTime* r)
+    {
+        cout << "Found Return Value" << endl;
+        cout << "   " << r->returnValue << endl;
+        return r->returnValue;
+        exit(1);
+    }
+    
+    //interpreter->executeBlock(declaration->body, env);
     
     
 
@@ -276,6 +285,7 @@ string Interpreter::VisitCallExpr(Call* expr)
     string callee = eval(expr->callee);
     cout << "   Entered VisitCallExpr() again" << endl;
     LoxFunction* func;
+    string returnFunc = "NIL";
     
     string lf = ",loxFunction";
     if(callee.find(lf) != string::npos)
@@ -293,10 +303,10 @@ string Interpreter::VisitCallExpr(Call* expr)
         cout << "function param: " ;
         cout << func->declaration->params.size() << endl;
 
-        func->Call(this,args);
+        returnFunc = func->Call(this,args);
     }
 
-    return "";
+    return returnFunc;
 }
 string Interpreter::VisitExpressionStmt(Expression* stmt) 
 {
@@ -352,7 +362,10 @@ string Interpreter::VisitPrintStmt(Print* stmt)
 string Interpreter::VisitReturnStmt(Return* stmt)
 {
     cout << "Enter VisitReturnStmt" << endl;
-    return "Return()";
+    string val = "";
+    if(stmt) val = eval(stmt->value);
+
+    throw new ReturnRunTime(val);
 }
 string Interpreter::VisitVarStmt(Var* stmt) 
 {
