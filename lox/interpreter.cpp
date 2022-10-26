@@ -22,10 +22,11 @@ class LoxFunction : public LoxCallable
 {
     private:
         any returnValue;
+        Environment* closure;
         
     public:
         Function* declaration;
-        LoxFunction(Function* d);
+        LoxFunction(Function* d, Environment* c);
         string Call(Interpreter* interpreter, list<string> args) override;
         int arity() override;
         string toString() override;
@@ -96,14 +97,16 @@ class Interpreter : public Visitor, VisitorStmt
 
 };
 
-LoxFunction::LoxFunction(Function* d)
+LoxFunction::LoxFunction(Function* d, Environment* c)
 {
     declaration = d;
+    closure = c;
 }
 string LoxFunction::Call(Interpreter* interpreter, list<string> args)
 {
     cout << "Enter LoxFunction::Call" << endl;
-    Environment *env = new Environment(interpreter->globals);
+    //Environment *env = new Environment(interpreter->globals);
+    Environment* env = new Environment(closure);
 
     list<Token>::iterator iParams = declaration->params.begin();
     list<string>::iterator iArgs = args.begin();
@@ -317,7 +320,7 @@ string Interpreter::VisitExpressionStmt(Expression* stmt)
 string Interpreter::VisitFunctionStmt(Function* stmt) 
 {
     cout << "Entered VisitFunctionStmt()" << endl;
-    LoxFunction* loxFunc = new LoxFunction(stmt);
+    LoxFunction* loxFunc = new LoxFunction(stmt, env);
     cout << "   " << stmt->name.tokenLiteral() << endl;
     env->defineLoxFunction(stmt->name.tokenLiteral(), loxFunc);
     return "NIL";
