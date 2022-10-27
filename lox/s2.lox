@@ -12,3 +12,14 @@ for (var i = 0; i < 4; i = i + 1) {
 }
 
 print sayHi("Girith", "Choudhary", "m");
+
+var a = "global";
+{
+  fun showA() {
+    print a;
+  }
+
+  showA();
+  var a = "block";
+  showA();
+}
