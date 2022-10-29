@@ -5,12 +5,12 @@
 
 using namespace std;
 
-class Environment
+class Environment1
 {
     public:
-        Environment* enclosing;
-        Environment();
-        Environment(Environment* e);
+        Environment1* enclosing;
+        Environment1();
+        Environment1(Environment1* e);
         void define(string name, string value);
         string getItem(Token name);
         void assign(Token name, string value);
@@ -18,22 +18,22 @@ class Environment
         unordered_map <string, string> valueMap;
 
 };
-Environment::Environment()
+Environment1::Environment1()
 {
     enclosing = NULL;
 }
-Environment::Environment(Environment* e)
+Environment1::Environment1(Environment1* e)
 {
     enclosing = e;
 }
 void
-Environment::define(string name, string value)
+Environment1::define(string name, string value)
 {
     //cout << "Entered define{" << name << "," << value << "}" << endl;
     valueMap.insert({{name, value}});
 }
 string
-Environment::getItem(Token name)
+Environment1::getItem(Token name)
 {
     //cout << "Enter getItem:" << name.tokenLiteral() << endl;
     if(valueMap.find(name.tokenLiteral()) != valueMap.end())
@@ -43,10 +43,11 @@ Environment::getItem(Token name)
     } 
     if (enclosing) return enclosing->getItem(name);
 
-    throw invalid_argument("Environment error");
+    throw invalid_argument("Environment1 error");
 }
+
 void
-Environment::assign(Token name, string value)
+Environment1::assign(Token name, string value)
 {
     //cout << "Entered env Assign" << endl;
     if(valueMap.find(name.tokenLiteral()) != valueMap.end())

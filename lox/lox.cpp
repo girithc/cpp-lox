@@ -89,6 +89,9 @@ class Lox
             Interpreter* interpreter = new Interpreter();
 
             cout << "---- Start Interpreter ----" << endl;
+
+            Resolver* resolver = new Resolver(interpreter);
+            resolver->resolve(stmts);
             interpreter->interpret(stmts);
             cout << "---- Interpreter ended ----" << endl << endl;
             exit(1);
