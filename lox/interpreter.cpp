@@ -5,9 +5,9 @@
 #include <iterator>
 #include <unordered_map>
 #include <stdexcept>
-#include <stack>
 #include <any>
 #include <map>
+#include <vector>
 
 
 class Interpreter;
@@ -62,15 +62,33 @@ class Resolver : public Visitor, VisitorStmt
 {
     private:
         Interpreter* interpreter;
-        stack<unordered_map<string, bool>> scopes; //new stack<unordered_map<string, bool>>();
+        vector<unordered_map<string, bool>*>* scopes = new vector<unordered_map<string, bool>*>; //new stack<unordered_map<string, bool>>();
         void resolveStmt(Stmt* stmt);
         void resolveExpr(Expr* expr);
         void declare(Token name);
         void define(Token name);
+        void resolveLocal(Expr* expr, Token name);
+        void resolveFunction(Function* function);
     public:
         Resolver(Interpreter* i);
         string VisitBlockStmt(Block* stmt) override;
+        string VisitExpressionStmt(Expression* stmt) override;
+        string VisitFunctionStmt(Function* stmt) override;
+        string VisitIfStmt(If* stmt) override;
+        string VisitPrintStmt(Print* stmt) override;
+        string VisitReturnStmt(Return* stmt) override;
         string VisitVarStmt(Var* stmt) override;
+        string VisitWhileStmt(While* stmt) override;
+
+        string VisitVariableExpr(Variable* expr) override;
+        string VisitAssignExpr(Assign* expr) override;
+        string VisitBinaryExpr(Binary* expr) override;
+        string VisitCallExpr(Call* expr) override;
+        string VisitGroupingExpr(Grouping* expr) override;
+        string VisitLiteralExpr(Literal* expr) override;
+        string VisitLogicalExpr(Logical* expr) override;
+        string VisitUnaryExpr(Unary* expr) override;
+
         void resolve(list<Stmt*> stmts);
         void beginScope();
         void endScope();
@@ -97,10 +115,12 @@ class Interpreter : public Visitor, VisitorStmt
         string VisitBlockStmt(Block* stmt) override;
         
         void interpret(list<Stmt*> stmts);
+        void resolve(Expr* expr, int depth);
         void executeBlock(list<Stmt*> s, Environment* e);
         Environment *globals = new Environment();
 
     private:
+        unordered_map<Expr*, int>* localScope = new unordered_map<Expr*, int>;
         Environment *env = globals;
         string eval(Expr *expr);
         string notTrue(string s);
@@ -127,6 +147,42 @@ string Resolver::VisitBlockStmt(Block* stmt)
     endScope();
     return "";
 }
+string Resolver::VisitExpressionStmt(Expression* stmt)
+{
+    resolveExpr(stmt->expression);
+    return "";
+}
+string Resolver::VisitFunctionStmt(Function* stmt)
+{
+    declare(stmt->name);
+    define(stmt->name);
+
+    resolveFunction(stmt);
+    return "";
+}
+string Resolver::VisitIfStmt(If* stmt)
+{
+    resolveExpr(stmt->condition);
+    resolveStmt(stmt->ifBranch);
+    if (stmt->elseBranch) 
+    {
+        resolveStmt(stmt->elseBranch);
+    }
+    return "";
+}
+string Resolver::VisitPrintStmt(Print* stmt)
+{
+    resolveExpr(stmt->expression);
+    return "";
+}
+string Resolver::VisitReturnStmt(Return* stmt)
+{
+    if(stmt->value)
+    {
+        resolveExpr(stmt->value);
+    }
+    return "";
+}
 string Resolver::VisitVarStmt(Var* stmt)
 {
     declare(stmt->name);
@@ -137,6 +193,65 @@ string Resolver::VisitVarStmt(Var* stmt)
     define(stmt->name);
     return "";
 }
+string Resolver::VisitWhileStmt(While* stmt)
+{
+    resolveExpr(stmt->condition);
+    resolveStmt(stmt->body);
+    return "";
+}
+string Resolver::VisitVariableExpr(Variable* expr)
+{
+    if(!scopes->empty() && scopes->front()->find(expr->name.tokenLiteral())->second == false)
+    {
+        throw invalid_argument("Can't read local variable in its own initializer.");
+    }
+
+    resolveLocal(expr, expr->name);
+
+    return "";
+}
+string Resolver::VisitAssignExpr(Assign* expr)
+{
+    resolveExpr(expr->value);
+    resolveLocal(expr, expr->name);
+    return "";
+}
+string Resolver::VisitBinaryExpr(Binary* expr)
+{
+    resolveExpr(expr->left);
+    resolveExpr(expr->right);
+    return "";
+}
+string Resolver::VisitCallExpr(Call* expr)
+{
+    resolveExpr(expr->callee);
+    list<Expr*>::iterator  itr;
+    for(itr = expr->arguments.begin(); itr != expr->arguments.end(); itr++)
+    {
+        resolveExpr(*itr);
+    }
+    return "";
+}
+string Resolver::VisitGroupingExpr(Grouping* expr)
+{
+    resolveExpr(expr->expression);
+    return "";
+}
+string Resolver::VisitLiteralExpr(Literal* expr)
+{
+    return "";
+}
+string Resolver::VisitLogicalExpr(Logical* expr)
+{
+    resolveExpr(expr->left);
+    resolveExpr(expr->right);
+    return "";
+}
+string Resolver::VisitUnaryExpr(Unary* expr)
+{
+    resolveExpr(expr->right);
+    return "";
+}
 void Resolver::resolve(list<Stmt*> stmts)
 {
     list<Stmt*>::iterator itr;
@@ -144,6 +259,19 @@ void Resolver::resolve(list<Stmt*> stmts)
     {
         resolveStmt(*itr);
     }
+}
+void Resolver::resolveFunction(Function* function)
+{
+    beginScope();
+    list<Token>::iterator itr;
+    for (itr = function->params.begin(); itr != function->params.begin(); itr++)
+    {
+        declare(*itr);
+        define(*itr);
+    }
+
+    resolve(function->body);
+    endScope();
 }
 void Resolver::resolveStmt(Stmt* stmt)
 {
@@ -156,24 +284,41 @@ void Resolver::resolveExpr(Expr* expr)
 void Resolver::beginScope()
 {
     //scopes.push()//push(new unordered_map<string, bool>());
+    scopes->push_back(new unordered_map<string, bool>);
 }
 void Resolver::endScope()
 {
-    scopes.pop();
+    scopes->erase(scopes->begin());
+    //scopes->pop();
 }
 void Resolver::declare(Token name)
 {
-    if(scopes.empty()) return;
+    if(scopes->empty()) return;
 
-    unordered_map<string, bool> scope = scopes.top();
-    scope[name.tokenLiteral()] = false;
+    unordered_map<string, bool>* scope;
+    scope = scopes->front();
+    scope->insert({name.tokenLiteral(), false});
+    //*scope[name.tokenLiteral()] = false;
 
 }
 void Resolver::define(Token name)
 {
-    if(scopes.empty()) return;
-    unordered_map<string, bool> scope = scopes.top();
-    scope[name.tokenLiteral()] = true;
+    if(scopes->empty()) return;
+    unordered_map<string, bool>* scope;
+    scope = scopes->front();
+    scope->insert({name.tokenLiteral(), true});
+}
+void Resolver::resolveLocal(Expr* expr, Token name)
+{
+    for (int i = scopes->size()-1; i >= 0; i--)
+    {
+        if ((scopes->at(i)->find(name.tokenLiteral())->second == false) ||
+            (scopes->at(i)->find(name.tokenLiteral())->second == true))
+        {
+            interpreter->resolve(expr, scopes->size()-1-i);
+            return;
+        }
+    }
 }
 
 LoxFunction::LoxFunction(Function* d, Environment* c)
@@ -491,6 +636,10 @@ void Interpreter::interpret(list<Stmt*> stmts)
     } catch (...) {
         cout << "Error in interpreter" << endl;
     }
+}
+void Interpreter::resolve(Expr* expr, int depth)
+{
+    localScope->insert({expr, depth});
 }
 void Interpreter::executeBlock(list<Stmt*> s, Environment* e)
 {
