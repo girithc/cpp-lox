@@ -10,8 +10,8 @@
 //print bagel;
 
 class Bacon {
-  eat() {
-    print "Crunch crunch crunch!";
+  eat(a) {
+    print a+a;
   }
 }
 
@@ -24,4 +24,4 @@ fun eatMeat()
 
 print eatMeat();
 
-Bacon().eat(); // Prints "Crunch crunch crunch!".
+Bacon().eat("crunch crunch crunch"); // Prints "Crunch crunch crunch!".
