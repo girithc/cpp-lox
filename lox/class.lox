@@ -1,0 +1,27 @@
+//class DevonshireCream {
+  //serveOn() {
+    //return "Scones";
+  //}
+//}
+//print DevonshireCream; // Prints "DevonshireCream".
+
+//class Bagel {}
+//var bagel = Bagel();
+//print bagel;
+
+class Bacon {
+  eat() {
+    print "Crunch crunch crunch!";
+  }
+}
+
+print " --------- divider --------- ";
+
+fun eatMeat()
+{
+  return "eating bacon";
+}
+
+print eatMeat();
+
+Bacon().eat(); // Prints "Crunch crunch crunch!".

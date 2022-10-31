@@ -85,6 +85,7 @@ class Parser{
         Stmt* expressionStatement();
 
         Stmt* declaration();
+        Stmt* classDeclaration();
         Stmt* varDeclaration();
         Stmt* returnStatement();
         list<Stmt*> block();
@@ -116,8 +117,10 @@ Parser::declaration()
     try
     {
         cout << "Entered declaration() " << getToken(current-1).tokenLiteral()  <<  " current : " << current << endl;
-        list<TokenType> tt,tt1;
+        list<TokenType> tt,tt1, tt2;
+        tt2.push_back(CLASS);
         tt1.push_back(FUN);
+        if(match(tt2)){ cout << "   match(CLASS)" << endl; return classDeclaration();}
         if(match(tt1)){ cout << "   match(FUN)" << endl; return function("function");}
         tt.push_back(VAR);
         if (match(tt)){ cout << "   match(VAR)" << endl; return varDeclaration();}
@@ -127,6 +130,21 @@ Parser::declaration()
     {
         throw invalid_argument("Parser error");
     }   
+}
+
+Stmt*
+Parser::classDeclaration()
+{
+    Token n = consume(IDENTIFIER, "Expected a class name.");
+    Token c = consume(LEFT_BRACE, "Expected '{' at the start of class body ");
+
+    list<Function*> methods;
+    while(!check(RIGHT_BRACE) && isNotEnd())
+    {
+        methods.push_back(function("method"));
+    }
+    Token rb = consume(RIGHT_BRACE, "Expect '}' at the end of class body");
+    return new Class(n, methods);
 }
 
 Stmt* 
@@ -355,6 +373,11 @@ Parser::assignment()
             //cout << "Token for Assign: " << n.tokenLiteral() << endl;
             return new Assign(n, v);
         }
+        else if(dynamic_cast<const Get*>(expr) != nullptr)
+        {
+            Get *vr = dynamic_cast< Get*>(expr);
+            return new Set(vr->object, vr->name, v);
+        }
 
         throw invalid_argument("Error in Variable casting on Expr. Location: assignment() " );
     }
@@ -570,13 +593,19 @@ Parser::call()
     cout << "   Entered call() again" << " current : " << current << endl;
     while(1)
     {
-        list<TokenType>tt;
+        list<TokenType>tt,tt1;
         tt.push_back(LEFT_PAREN);
+        tt1.push_back(DOT);
         if(match(tt))
         {
             cout << "----Start finishCall()----" << endl;
             expr = finishCall(expr);
             cout << " ----End finishCall()----" << endl;
+        }
+        else if(match(tt1))
+        {
+            Token name = consume(IDENTIFIER, "Expect property name after '.' .");
+            expr = new Get(expr, name);
         }
         else
         {

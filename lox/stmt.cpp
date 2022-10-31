@@ -59,13 +59,13 @@ class Class : public Stmt
 {
     public:
         Token name;
-        Variable* superclass;
+        //Variable* superclass;
         list<Function*> methods;
 
-    Class(Token n, Variable* s, list<Function*> m)
+    Class(Token n, list<Function*> m)
     {
         name = n;
-        superclass = s;
+        //superclass = s;
         methods = m;
     }
 

@@ -74,7 +74,8 @@
         "stack": "cpp",
         "filesystem": "cpp",
         "__functional_03": "cpp",
-        "any": "cpp"
+        "any": "cpp",
+        "memory_resource": "cpp"
     },
     "C_Cpp.errorSquiggles": "Disabled"
 }
