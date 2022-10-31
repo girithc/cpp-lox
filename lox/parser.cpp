@@ -623,7 +623,7 @@ Parser::primary()
     //cout << "Primary" << endl;
     cout << "Entered primary()" << " Token: " << getToken(current-1).tokenType() << " current : " << current << endl;
 
-    list<TokenType> t1, t2, t3, t4, t5;
+    list<TokenType> t1, t2, t3, t4, t5,t6;
     
     t1.push_back(FALSE);
     if(match(t1))
@@ -654,6 +654,9 @@ Parser::primary()
         } 
         return new Literal(temp.tokenLiteral());
     }
+
+    t6.push_back(THIS);
+    if(match(t6)) return new This(getToken(current-1));
 
     t4.push_back(IDENTIFIER);
     if(match(t4))

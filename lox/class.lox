@@ -5,23 +5,15 @@
 //}
 //print DevonshireCream; // Prints "DevonshireCream".
 
-//class Bagel {}
-//var bagel = Bagel();
-//print bagel;
-
 class Bacon {
   eat(a) {
-    print a+a;
+    return a;
   }
 }
 
-print " --------- divider --------- ";
 
-fun eatMeat()
-{
-  return "eating bacon";
-}
+var b = Bacon();
 
-print eatMeat();
+print b.eat("food");
 
-Bacon().eat("crunch crunch crunch"); // Prints "Crunch crunch crunch!".
+b.seat = 5;
