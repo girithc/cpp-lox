@@ -1,0 +1,23 @@
+fun sayHi(first, last, middle) {
+print "Hi "+first+" "+middle+". "+last;
+}
+sayHi("Girith", "Choudhary", "m");
+
+testRegularFunction()
+Test passed: (Hi Girith m. Choudhary) = (Hi Girith m. Choudhary)
+
+
+fun factorial(n) {
+  if(n==0) return 1;
+  return n * factorial(n-1);
+}
+for (var i = 0; i <= 4; i = i + 1) {
+  print factorial(i);
+}
+
+testRecursiveFunction()
+Test passed: (1) = (1)
+Test passed: (1) = (1)
+Test passed: (2) = (2)
+Test passed: (6) = (6)
+Test passed: (24) = (24)

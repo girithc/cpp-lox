@@ -2,6 +2,7 @@
 #include <iostream>
 #include <cassert>
 #include <string>
+#include <string.h>
 #include <iterator>
 #include <fstream>
 
@@ -39,9 +40,13 @@ void testIfStatement()
 
     string code = "var a = 1;";
     code.append("if ( a < 1) print \"a is less than 1\" ;");
+    code.append("\n");
     code.append("else print \"a is greater than 1\";");
+    code.append("\n");
     code.append("if(true) print \"yes\" or nil;");
+    code.append("\n");
     code.append("if(!nil) print true and false;");
+    code.append("\n");
 
     streambuf* oldCout = cout.rdbuf();
     cout.rdbuf(testFile.rdbuf());
@@ -67,21 +72,25 @@ void testIfStatement()
     rdFile.open("test/testIf.txt");
     wrFile.open("test/testParserAndInterpreter.txt");
 
+    wrFile << code << endl << endl;
+
     getline(rdFile, line);
     wrFile << line << endl;
 
-    
-    getline(rdFile, line);
-    assert(line == "a is greater than 1");
-    wrFile << "Test passed: (" << line << ") = " << "(a is greater than 1)" << endl;
+    string lox = "lox>";
 
     getline(rdFile, line);
-    assert(line == "yes");
-    wrFile << "Test passed: (" << line << ") = " << "(yes)" << endl;
+    assert(line.substr(lox.length()) == "a is greater than 1");
+    wrFile << "Test passed: (" << line.substr(lox.length()) << ") = " << "(a is greater than 1)" << endl;
+
 
     getline(rdFile, line);
-    assert(line == "FALSE");
-    wrFile << "Test passed: (" << line << ") = " << "(FALSE)" << endl << endl;
+    assert(line.substr(lox.length()) == "yes");
+    wrFile << "Test passed: (" << line.substr(lox.length()) << ") = " << "(yes)" << endl;
+
+    getline(rdFile, line);
+    assert(line.substr(lox.length()) == "FALSE");
+    wrFile << "Test passed: (" << line.substr(lox.length()) << ") = " << "(FALSE)" << endl << endl;
 
     rdFile.close();
     remove("test/testIf.txt");
@@ -95,9 +104,13 @@ void testWhileStatement()
     testFile.open("test/testWhile.txt");
     //input file
     string code = "var a = 4; var i = 8;";
+    code.append("\n");
     code.append("while ( a < i) { ");
+    code.append("\n");
     code.append("print a; a = a+1; }");
+    code.append("\n");
     code.append("print a;");
+    code.append("\n");
 
     streambuf* oldCout = cout.rdbuf();
     cout.rdbuf(testFile.rdbuf());
@@ -124,29 +137,35 @@ void testWhileStatement()
     rdFile.open("test/testWhile.txt");
     wrFile.open("test/testParserAndInterpreter.txt", ios_base::app);
 
+    wrFile << code << endl << endl;
+
     getline(rdFile, line);
     wrFile << line << endl;
 
+    string lox = "lox>";
     
     getline(rdFile, line);
-    assert(stod(line) == stod("4"));
-    wrFile << "Test passed: (" << stod(line) << ") = (" << stod("4") << ")" << endl;
+    assert(stod(line.substr(lox.length())) == stod("4"));
+    wrFile << "Test passed: (" << stod(line.substr(lox.length())) << ") = (" << stod("4") << ")" << endl;
+
 
     getline(rdFile, line);
-    assert(stod(line) == stod("5"));
-    wrFile << "Test passed: (" << stod(line) << ") = (" << stod("5") << ")" << endl;
+    assert(stod(line.substr(lox.length())) == stod("5"));
+    wrFile << "Test passed: (" << stod(line.substr(lox.length())) << ") = (" << stod("5") << ")" << endl;
+
 
     getline(rdFile, line);
-    assert(stod(line) == stod("6"));
-    wrFile << "Test passed: (" << stod(line) << ") = (" << stod("6") << ")" << endl;
+    assert(stod(line.substr(lox.length())) == stod("6"));
+    wrFile << "Test passed: (" << stod(line.substr(lox.length())) << ") = (" << stod("6") << ")" << endl;
 
     getline(rdFile, line);
-    assert(stod(line) == stod("7"));
-    wrFile << "Test passed: (" << stod(line) << ") = (" << stod("7") << ")" << endl;
+    assert(stod(line.substr(lox.length())) == stod("7"));
+    wrFile << "Test passed: (" << stod(line.substr(lox.length())) << ") = (" << stod("7") << ")" << endl;
 
     getline(rdFile, line);
-    assert(stod(line) == stod("8"));
-    wrFile << "Test passed: (" << stod(line) << ") = (" << stod("8") << ")" << endl << endl;
+    assert(stod(line.substr(lox.length())) == stod("8"));
+    wrFile << "Test passed: (" << stod(line.substr(lox.length())) << ") = (" << stod("8") << ")" << endl << endl;
+
 
     rdFile.close();
     remove("test/testWhile.txt");
@@ -158,8 +177,11 @@ void testForStatement()
     testFile.open("test/testFor.txt");
 
     string code = "var i = 4;";
+    code.append("\n");
     code.append("for (var a = 0; a<i; a=a+1)");
+    code.append("\n");
     code.append("{print a;}");
+    code.append("\n");
 
     streambuf* oldCout = cout.rdbuf();
     cout.rdbuf(testFile.rdbuf());
@@ -186,25 +208,28 @@ void testForStatement()
     rdFile.open("test/testFor.txt");
     wrFile.open("test/testParserAndInterpreter.txt", ios_base::app);
 
+    string lox = "lox>";
+
+    wrFile << code << endl << endl;
+
     getline(rdFile, line);
     wrFile << line << endl;
-
     
     getline(rdFile, line);
-    assert(stod(line) == stod("0"));
-    wrFile << "Test passed: (" << stod(line) << ") = (" << stod("0") << ")" << endl;
+    assert(stod(line.substr(lox.length())) == stod("0"));
+    wrFile << "Test passed: (" << stod(line.substr(lox.length())) << ") = (" << stod("0") << ")" << endl;
 
     getline(rdFile, line);
-    assert(stod(line) == stod("1"));
-    wrFile << "Test passed: (" << stod(line) << ") = (" << stod("1") << ")" << endl;
+    assert(stod(line.substr(lox.length())) == stod("1"));
+    wrFile << "Test passed: (" << stod(line.substr(lox.length())) << ") = (" << stod("1") << ")" << endl;
 
     getline(rdFile, line);
-    assert(stod(line) == stod("2"));
-    wrFile << "Test passed: (" << stod(line) << ") = (" << stod("2") << ")" << endl;
+    assert(stod(line.substr(lox.length())) == stod("2"));
+    wrFile << "Test passed: (" << stod(line.substr(lox.length())) << ") = (" << stod("2") << ")" << endl;
 
     getline(rdFile, line);
-    assert(stod(line) == stod("3"));
-    wrFile << "Test passed: (" << stod(line) << ") = (" << stod("3") << ")" << endl << endl;
+    assert(stod(line.substr(lox.length())) == stod("3"));
+    wrFile << "Test passed: (" << stod(line.substr(lox.length())) << ") = (" << stod("3") << ")" << endl << endl;
 
     rdFile.close();
     remove("test/testFor.txt");

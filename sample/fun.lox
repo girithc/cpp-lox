@@ -1,0 +1,13 @@
+fun sayHi(first, last, middle) {
+  print "Hi "+first+" "+middle+". "+last;
+}
+sayHi("Girith", "Choudhary", "m");
+
+fun factorial(n) {
+  if(n==0) return 1;
+  return n * factorial(n-1);
+}
+
+for (var i = 0; i <= 4; i = i + 1) {
+  print "factorial of (" + i +") = " +factorial(i);
+}

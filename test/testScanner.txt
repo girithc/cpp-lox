@@ -1,3 +1,7 @@
+var a = "Declared";
+a = 4;
+
+
 testDeclaration()
 Test passed: var=VAR
 Test passed: a=IDENTIFIER
@@ -8,6 +12,13 @@ Test passed: a=IDENTIFIER
 Test passed: ==EQUAL
 Test passed: 4=NUMBER
 Test passed: ;=SEMICOLON
+
+
+if (a<b) {
+  print a/b;
+} else {
+  print a*b;
+}
 
 
 testIfElseAndComparison()
@@ -32,6 +43,10 @@ Test passed: *=STAR
 Test passed: b=IDENTIFIER
 Test passed: ;=SEMICOLON
 Test passed: }=RIGHT_BRACE
+
+
+while (true and false){ // comment
+ return true or false;}
 
 
 testWhileAndBool()

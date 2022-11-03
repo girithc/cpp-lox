@@ -1,7 +1,19 @@
+var a = 1;if ( a < 1) print "a is less than 1" ;
+else print "a is greater than 1";
+if(true) print "yes" or nil;
+if(!nil) print true and false;
+
+
 testIfStatement()
 Test passed: (a is greater than 1) = (a is greater than 1)
 Test passed: (yes) = (yes)
 Test passed: (FALSE) = (FALSE)
+
+var a = 4; var i = 8;
+while ( a < i) { 
+print a; a = a+1; }
+print a;
+
 
 testWhileStatement()
 Test passed: (4) = (4)
@@ -9,6 +21,11 @@ Test passed: (5) = (5)
 Test passed: (6) = (6)
 Test passed: (7) = (7)
 Test passed: (8) = (8)
+
+var i = 4;
+for (var a = 0; a<i; a=a+1)
+{print a;}
+
 
 testForStatement()
 Test passed: (0) = (0)

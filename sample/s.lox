@@ -1,0 +1,5 @@
+var a = 4; var i = 8;
+while ( a < i) { 
+  print a; a = a+1; }
+  print a;
+

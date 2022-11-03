@@ -1,5 +1,5 @@
 
-#include "testParserAndInterpreter.cpp"
+#include "testFunctions.cpp"
 #include <iostream>
 #include <cassert>
 #include <string>
@@ -15,12 +15,16 @@ void testDeclaration()
         testFile.open("test/testScanner.txt");
 
         string code = "var a = \"Declared\";";
+        code.append("\n");
         code.append("a = 4;");
+        code.append("\n");
         Scanner scanner(code);
         list<Token> testTokens = scanner.scanTokens();
         
         list<Token>::iterator testItr;
         testItr = testTokens.begin();
+
+        testFile << code << endl << endl;
 
         testFile << "testDeclaration()" << endl;
     
@@ -68,15 +72,22 @@ void testIfElseAndComparison()
         testFile.open("test/testScanner.txt", ios_base::app);
 
         string code = "if (a<b) {";
+        code.append("\n");
         code.append("  print a/b;");
+        code.append("\n");
         code.append("} else {");
+        code.append("\n");
         code.append("  print a*b;");
+        code.append("\n");
         code.append("}");
+        code.append("\n");
         Scanner scanner(code);
         list<Token> testTokens = scanner.scanTokens();
         
         list<Token>::iterator testItr;
         testItr = testTokens.begin();
+
+        testFile << code << endl << endl;
 
         testFile << "testIfElseAndComparison()" << endl;
 
@@ -176,12 +187,15 @@ void testWhileAndBool()
         string code = "while (true and false){ // comment";
         code.append("\n");
         code.append(" return true or false;}");
+        code.append("\n");
         
         Scanner scanner(code);
         list<Token> testTokens = scanner.scanTokens();
         
         list<Token>::iterator testItr;
         testItr = testTokens.begin();
+
+        testFile << code << endl << endl;
 
         testFile << "testWhileAndBool()" << endl;
 

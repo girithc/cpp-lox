@@ -7,13 +7,7 @@
 #include <stdexcept>
 #include <any>
 
-template<typename K, typename V>
-void print_map(std::unordered_map<K, V> const &m)
-{
-    for (auto const &pair: m) {
-        std::cout << "{" << pair.first << ": " << pair.second << "}\n";
-    }
-}
+
 class Interpreter;
 class Environment;
 class LoxClass;
@@ -161,7 +155,7 @@ LoxFunction* LoxFunction::bind(LoxInstance* li)
 }
 string LoxFunction::Call(Interpreter* interpreter, list<string> args)
 {
-    cout << "Enter LoxFunction::Call" << endl;
+    //cout << "Enter LoxFunction::Call" << endl;
     //Environment *env = new Environment(interpreter->globals);
     Environment* env = new Environment(closure);
 
@@ -176,13 +170,13 @@ string LoxFunction::Call(Interpreter* interpreter, list<string> args)
 
     try
     { 
-        cout << "Executing Function block" << endl;
+        //cout << "Executing Function block" << endl;
         interpreter->executeBlock(declaration->body, env);
     }
     catch(ReturnRunTime* r)
     {
-        cout << "Found Return Value" << endl;
-        cout << "   " << r->returnValue << endl;
+        //cout << "Found Return Value" << endl;
+        //cout << "   " << r->returnValue << endl;
         return r->returnValue;
         exit(1);
     }
@@ -234,9 +228,10 @@ LoxClass::Call(Interpreter* interpreter, list<string> args)
 LoxFunction*
 LoxClass::findMethod(string name)
 {
-    cout << "   Enter LoxClass::findMethod(" << name << ")" << endl;
+    //cout << "   Enter LoxClass::findMethod(" << name << ")" << endl;
     if(methods.size() == 0){ return NULL;}
-    else if(methods.find(name) != methods.end()){cout << "  method found" << endl; return methods.find(name)->second;}
+    else if(methods.find(name) != methods.end()){//cout << "  method found" << endl; 
+        return methods.find(name)->second;}
 
     return NULL;
 }
@@ -249,15 +244,15 @@ LoxInstance::LoxInstance(LoxClass* l)
         
 string LoxInstance::literal()
 {
-    cout << "Enter LoxInstance::literal" << endl;
+    //cout << "Enter LoxInstance::literal" << endl;
     return lc->name + " <instance>";
 }
 LoxFunction* LoxInstance::get(string name)
 {
-    cout << "   Enter LoxInstance::get, method:" << name << endl;
+    //cout << "   Enter LoxInstance::get, method:" << name << endl;
     if(fields.size() == 0)
     {
-        cout << "   len(fields)=0" << endl;
+        //cout << "   len(fields)=0" << endl;
     }
     else if(fields.find(name) != fields.end())
     {
@@ -276,7 +271,7 @@ LoxFunction* LoxInstance::get(string name)
 }
 void LoxInstance::set(Token name, LoxFunction* value)
 {
-    cout << "   Enter LoxInstance::Set(" << name.tokenLiteral() << endl;
+    //cout << "   Enter LoxInstance::Set(" << name.tokenLiteral() << endl;
     fields.insert({name.tokenLiteral(), value});
 }
 
@@ -291,12 +286,12 @@ Environment::Environment(Environment* e)
 }
 void Environment::define(string name, string value)
 {
-    cout << "env> Entered define{" << name << "," << value << "}" << endl;
+    //cout << "env> Entered define{" << name << "," << value << "}" << endl;
     valueMap.insert({{name, value}});
 }
 void Environment::defineLoxFunction(string name, LoxFunction* value)
 {
-    cout << "Entered defineLoxFunction {" << name << "," << value << "}" << endl;
+    //cout << "Entered defineLoxFunction {" << name << "," << value << "}" << endl;
     string l= "loxFunction";
     define(name,l);
     valueMapLoxFunction.insert({{name, value}});
@@ -304,7 +299,7 @@ void Environment::defineLoxFunction(string name, LoxFunction* value)
 }
 void Environment::defineLoxClass(string name, LoxClass* value)
 {
-    cout << "Entered defineClass{" << name << "," << value << "}" << endl;
+    //cout << "Entered defineClass{" << name << "," << value << "}" << endl;
     string l= "loxClass";
     define(name,l);
     valueMapLoxClass.insert({{name, value}});
@@ -312,7 +307,7 @@ void Environment::defineLoxClass(string name, LoxClass* value)
 }
 void Environment::defineLoxInstance(string name, string valueMapValue, LoxInstance* value)
 {
-    cout << "Entered defineInstance{" << name << "," << value << "}" << endl;
+    //cout << "Entered defineInstance{" << name << "," << value << "}" << endl;
     valueMapValue.append(name);
     define(name,valueMapValue);
     valueMapLoxInstance.insert({{name, value}});
@@ -321,15 +316,16 @@ void Environment::defineLoxInstance(string name, string valueMapValue, LoxInstan
 
 string Environment::getItem(Token name)
 {
-    cout << "Enter getItem:" << name.tokenLiteral() << endl;
+    //cout << "Enter getItem:" << name.tokenLiteral() << endl;
     if(valueMap.find(name.tokenLiteral()) != valueMap.end())
     {
-        cout << "Found " << endl;
+        //cout << "Found " << endl;
         if(valueMap[name.tokenLiteral()]=="loxFunction") return name.tokenLiteral()+","+"loxFunction";
         if(valueMap[name.tokenLiteral()]=="loxClass") return name.tokenLiteral()+","+"loxClass";
         return valueMap[name.tokenLiteral()];
     } 
-    if (enclosing){cout << "    enclosing"<<endl; return enclosing->getItem(name);}
+    if (enclosing){//cout << "    enclosing"<<endl; 
+    return enclosing->getItem(name);}
 
 
     throw invalid_argument("Environment error");
@@ -348,47 +344,45 @@ LoxFunction* Environment::getLoxFunction(string name)
 }
 LoxClass* Environment::getLoxClass(string name)
 {
-    cout << "   Enter getLoxClass:" << name << endl;
+    //cout << "   Enter getLoxClass:" << name << endl;
     if(valueMapLoxClass.find(name) != valueMapLoxClass.end())
     {
-        cout << "       Found" << endl;
+        //cout << "       Found" << endl;
         return valueMapLoxClass[name];
     } 
-    if (enclosing){cout << "    enclosing" << endl; return enclosing->getLoxClass(name);}
+    if (enclosing){//cout << "    enclosing" << endl; 
+    return enclosing->getLoxClass(name);}
 
     throw invalid_argument("Environment error");
 }
 LoxInstance* Environment::getLoxInstance(string name)
 {
-    cout << "Enter getLoxInstance:" << name << endl;
-    print_map(valueMapLoxInstance);
+    //cout << "Enter getLoxInstance:" << name << endl;
+    
     if(valueMapLoxInstance.find(name) != valueMapLoxInstance.end())
     {
-        cout << "   Found " << valueMapLoxInstance[name] << endl;
+        //cout << "   Found " << valueMapLoxInstance[name] << endl;
         return valueMapLoxInstance[name];
     } 
-    if (enclosing){cout << "    enclosing" << endl; return enclosing->getLoxInstance(name);}
+    if (enclosing){//cout << "    enclosing" << endl; 
+    return enclosing->getLoxInstance(name);}
 
     throw invalid_argument("Environment error");
 }
 void Environment::assign(Token name, string value)
 {
     
-    cout << "Entered env Assign" << endl << endl;
-    cout << "valueMap:" << endl;
-    print_map(valueMap);
-    cout << "valueMapLoxInstance:" << endl;
-    print_map(valueMapLoxInstance);
-    cout << "valueMap:" << endl;
-    print_map(valueMap);
-    cout << "valueMapLoxFunction:" << endl;
-    print_map(valueMapLoxFunction);
-    cout << "valueMapLoxClass:" << endl;
-    print_map(valueMapLoxClass);
-    cout << endl;
+    //cout << "Entered env Assign" << endl << endl;
+    //cout << "valueMap:" << endl;
+    //(valueMap);
+    //cout << "valueMapLoxInstance:" << endl;
+    //cout << "valueMap:" << endl;
+    //cout << "valueMapLoxFunction:" << endl;
+    //cout << "valueMapLoxClass:" << endl;
+    //cout << endl;
     if(valueMap.find(name.tokenLiteral()) != valueMap.end())
     {
-        cout << "Changing key value in map: " << value << endl;
+        //cout << "Changing key value in map: " << value << endl;
         unordered_map <string, string>::iterator i = valueMap.find(name.tokenLiteral());
         i->second = value;
         return;
@@ -421,14 +415,14 @@ void Environment::assignLoxFunction(Token name, LoxFunction* value)
 }
 void Environment::assignLoxClass(Token name, LoxClass* value)
 {
-    cout << "Entered assignLoxClass:" << name.tokenLiteral() << endl;
+    //cout << "Entered assignLoxClass:" << name.tokenLiteral() << endl;
     if(valueMap.find(name.tokenLiteral()) != valueMap.end())
     {
         //cout << "Changing key value in map: " << value << endl;
         unordered_map <string, LoxClass*>::iterator i = valueMapLoxClass.find(name.tokenLiteral());
         i->second = value;
 
-        cout << "   {" << name.tokenLiteral() << "," << valueMapLoxClass[name.tokenLiteral()] << "}" << endl;
+        //cout << "   {" << name.tokenLiteral() << "," << valueMapLoxClass[name.tokenLiteral()] << "}" << endl;
         return;
     }
 
@@ -444,13 +438,13 @@ void Environment::assignLoxClass(Token name, LoxClass* value)
 
 string Interpreter::VisitLiteralExpr(Literal *expr)
 {
-    cout << "Entered VisitLiteralExpr() " << expr->value << endl;
+    //cout << "Entered VisitLiteralExpr() " << expr->value << endl;
     //cout << "Expr.value: " << expr->value << endl;
     return expr->value;
 }
 string Interpreter::VisitLogicalExpr(Logical* expr) 
 {
-    cout << "Enter VisitLogicalExpr()" << endl;
+    //cout << "Enter VisitLogicalExpr()" << endl;
     string l = eval(expr->left);
 
     if(expr->op.tokenType() == "OR")
@@ -467,18 +461,18 @@ string Interpreter::VisitLogicalExpr(Logical* expr)
 string Interpreter::VisitSetExpr(Set* expr)
 {
 
-    cout << "Enter VisitSetExpr" << endl;
+    //cout << "Enter VisitSetExpr" << endl;
     string s = eval(expr->object);
-    cout << "   VisitSetExpr eval: " << s << " set: " << expr->name.tokenLiteral() << endl;
+    //cout << "   VisitSetExpr eval: " << s << " set: " << expr->name.tokenLiteral() << endl;
     
     if(s.find("<instance>") != string::npos)
     {
         string v = eval(expr->value);
-        cout << "   v in VisitSetExpr:" << v << endl;
+        //cout << "   v in VisitSetExpr:" << v << endl;
         
         //loxinstance.set(expr->name, v);
         string varName = s.substr(s.find('>')+1);
-        cout << "   varName: " << varName << endl;
+        //cout << "   varName: " << varName << endl;
         
 
         LoxInstance* li = env->getLoxInstance(varName);
@@ -499,7 +493,7 @@ string Interpreter::VisitSetExpr(Set* expr)
 }
 string Interpreter::VisitThisExpr(This* expr)
 {
-    cout << "Entered VisitThisExpr: " << expr->keyword.tokenLiteral() << endl;
+    //cout << "Entered VisitThisExpr: " << expr->keyword.tokenLiteral() << endl;
 
     string k = expr->keyword.tokenLiteral();
     k.append(" <instance>");
@@ -509,18 +503,18 @@ string Interpreter::VisitThisExpr(This* expr)
     addr << li;
     string str_addr =  addr.str(); 
 
-    cout << str_addr << endl;
+    //cout << str_addr << endl;
     //exit(1);
     return str_addr;
 }
 string Interpreter::VisitGroupingExpr(Grouping *expr) 
 {
-    cout << "Entered VisitGroupingExpr" << endl;
+    //cout << "Entered VisitGroupingExpr" << endl;
     return eval(expr->expression);
 }
 string Interpreter::VisitUnaryExpr(Unary *expr) 
 {
-    cout << "Entered VisitUnaryExpr" << endl;
+    //cout << "Entered VisitUnaryExpr" << endl;
     string r = eval(expr->right);
 
     if (expr->op.tokenType() == "MINUS") return r;
@@ -530,25 +524,25 @@ string Interpreter::VisitUnaryExpr(Unary *expr)
 }
 string Interpreter::VisitVariableExpr(Variable* expr) 
 {
-    cout << "Entered VisitVariableExpr: " << expr->name.tokenLiteral() << endl;
+    //cout << "Entered VisitVariableExpr: " << expr->name.tokenLiteral() << endl;
     return env->getItem(expr->name);
 }
 string Interpreter::VisitAssignExpr(Assign* expr) 
 {
-    cout << "Entered VisitAssignExpr" << endl;
+    //cout << "Entered VisitAssignExpr" << endl;
     string v = eval(expr->value);
-    cout << "   new Value: " << v << endl;
+    //cout << "   new Value: " << v << endl;
     env->assign(expr->name, v);
     return "";
 }
 string Interpreter::VisitBinaryExpr(Binary *expr) 
 {
-    cout << "Entered VisitBinaryExpr" << endl;
+    //cout << "Entered VisitBinaryExpr" << endl;
     string l = eval(expr->left);
     string r = eval(expr->right);
     
     //
-    //cout << "   " << l << expr->op.tokenLiteral() << r << endl; 
+    ////cout << "   " << l << expr->op.tokenLiteral() << r << endl; 
     //
 
     if(expr->op.tokenType() == "MINUS") return to_string(stod(l) - stod(r));
@@ -569,9 +563,9 @@ string Interpreter::VisitBinaryExpr(Binary *expr)
 }
 string Interpreter::VisitCallExpr(Call* expr) 
 {
-    cout << "Enter VisitCallExpr()" << endl;
+    //cout << "Enter VisitCallExpr()" << endl;
     string callee = eval(expr->callee);
-    cout << "   Entered VisitCallExpr() again: " << "callee: " << callee << endl;
+    //cout << "   Entered VisitCallExpr() again: " << "callee: " << callee << endl;
     LoxFunction* func;
     LoxClass* lClass;
     string returnFunc = "NIL";
@@ -592,8 +586,8 @@ string Interpreter::VisitCallExpr(Call* expr)
         {
             args.push_back(eval(*i));
         }
-        cout << "function param: " ;
-        cout << func->declaration->params.size() << endl;
+        //cout << "function param: " ;
+        //cout << func->declaration->params.size() << endl;
 
         returnFunc = func->Call(this,args);
     }
@@ -602,7 +596,7 @@ string Interpreter::VisitCallExpr(Call* expr)
     {
         
         string className = callee.substr(0, callee.find(','));
-        cout << "   callee is a loxClass: " << className << endl;
+        //cout << "   callee is a loxClass: " << className << endl;
         
         lClass = env->getLoxClass(className);
 
@@ -613,21 +607,21 @@ string Interpreter::VisitCallExpr(Call* expr)
         {
             args.push_back(eval(*i));
         }
-        cout << "   got class parameters:" << args.size()  << endl;
+        //cout << "   got class parameters:" << args.size()  << endl;
         returnFunc = lClass->Call(this,args);
     }
     else if(callee.find(nli) != string::npos)
     {
         
         string className = callee.substr(0, callee.find(','));
-        cout << "   callee is a newloxInstance: " << className << endl;
+        //cout << "   callee is a newloxInstance: " << className << endl;
         
 
         LoxInstance* li = new LoxInstance(env->getLoxClass(className));
         
         string methodName = callee.substr(callee.find(',')+1);
         methodName = methodName.substr(methodName.find(',')+1);
-        cout << "   methodName:" << methodName << endl;
+        //cout << "   methodName:" << methodName << endl;
 
         
         LoxFunction* lfunction =  li->get(methodName);
@@ -639,21 +633,21 @@ string Interpreter::VisitCallExpr(Call* expr)
         {
             args.push_back(eval(*i));
         }
-        cout << "   got class parameters:" << args.size()  << endl;
+        //cout << "   got class parameters:" << args.size()  << endl;
         returnFunc = lfunction->Call(this,args);
     }
     else if(callee.find(sli) != string::npos)
     {
         
         string instanceName = callee.substr(0, callee.find(','));
-        cout << "   callee is a storedloxInstance: " << instanceName << endl;
+        //cout << "   callee is a storedloxInstance: " << instanceName << endl;
         
 
         LoxInstance* li = env->getLoxInstance(instanceName);
         
         string methodName = callee.substr(callee.find(',')+1);
         methodName = methodName.substr(methodName.find(',')+1);
-        cout << "   methodName:" << methodName << endl;
+        //cout << "   methodName:" << methodName << endl;
 
         
         LoxFunction* lfunction =  li->get(methodName);
@@ -665,7 +659,7 @@ string Interpreter::VisitCallExpr(Call* expr)
         {
             args.push_back(eval(*i));
         }
-        cout << "   got class parameters:" << args.size()  << endl;
+        //cout << "   got class parameters:" << args.size()  << endl;
         returnFunc = lfunction->Call(this,args);
     }
 
@@ -673,17 +667,17 @@ string Interpreter::VisitCallExpr(Call* expr)
 }
 string Interpreter::VisitGetExpr(Get* expr)
 {
-    cout << "Enter VisitGetExpr" << endl;
+    //cout << "Enter VisitGetExpr" << endl;
     string s = eval(expr->object);
-    cout << "   VisitGetExpr again: " << s << endl;
+    //cout << "   VisitGetExpr again: " << s << endl;
     
     if(s.find("<instance>") != string::npos)
     {
-        cout << "   :" << s.substr(s.find('>')+1)<< endl;
+        //cout << "   :" << s.substr(s.find('>')+1)<< endl;
 
         if(s.substr(s.find('>')+1).length() == 0)
         {   //...temp instance. ...Ex bacon().eat("now");
-            cout << "   non-variable instance of class" << endl;
+            //cout << "   non-variable instance of class" << endl;
             
             //LoxInstance* li = new LoxInstance(env->getLoxClass(s.substr(0,s.find("<instance>")-1)));
             //LoxFunction* lfunction =  li->get(expr->name.tokenLiteral());
@@ -701,7 +695,7 @@ string Interpreter::VisitGetExpr(Get* expr)
         else
         {   //... stored instance. ...Ex var b = bacon(); print b.eat("now");
             string functionName = s.substr(s.find('>')+1);
-            cout << "   functionName:" << functionName << endl;
+            //cout << "   functionName:" << functionName << endl;
 
             functionName.append(",storedLoxInstance");
             functionName.append(",");
@@ -719,25 +713,25 @@ string Interpreter::VisitGetExpr(Get* expr)
 }
 string Interpreter::VisitExpressionStmt(Expression* stmt) 
 {
-    cout << "Entered VisitExpressionStmt()" << endl;
+    //cout << "Entered VisitExpressionStmt()" << endl;
     string e = eval(stmt->expression);
     return "";
 }
 string Interpreter::VisitFunctionStmt(Function* stmt) 
 {
-    cout << "Entered VisitFunctionStmt()" << endl;
+    //cout << "Entered VisitFunctionStmt()" << endl;
     LoxFunction* loxFunc = new LoxFunction(stmt, env);
-    cout << "   " << stmt->name.tokenLiteral() << endl;
+    //cout << "   " << stmt->name.tokenLiteral() << endl;
     env->defineLoxFunction(stmt->name.tokenLiteral(), loxFunc);
     return "NIL";
 }
 string Interpreter::VisitWhileStmt(While* stmt) 
 {
-    cout << "Entered VisitWhileStmt" << endl;
+    //cout << "Entered VisitWhileStmt" << endl;
     int i = 0;
     while(notTrue(eval(stmt->condition)) == "false")
     {
-        //cout << "       ";
+        ////cout << "       ";
         execute(stmt->body);
         //i++;
         //if(i > 4) exit(1);
@@ -748,7 +742,7 @@ string Interpreter::VisitWhileStmt(While* stmt)
 }
 string Interpreter::VisitIfStmt(If* stmt) 
 {
-    cout << "Enter VisitIfStatement()" << endl;
+    //cout << "Enter VisitIfStatement()" << endl;
     if(notTrue(eval(stmt->condition)) == "false")
     {
         //cout << "   Enter ifBranch" << endl;
@@ -762,20 +756,20 @@ string Interpreter::VisitIfStmt(If* stmt)
 }
 string Interpreter::VisitPrintStmt(Print* stmt) 
 {
-    cout << "   Entered VisitPrintStmt" << endl;
+    //cout << "   Entered VisitPrintStmt" << endl;
     string v = eval(stmt->expression);
     if(v.find("<instance>") != string::npos)
     {   
         string i = "<instance>";
         v = v.substr(0,v.find("<instance>")+i.length());
     }
-    cout  << endl <<  "lox>>" <<  v << endl << endl;
+    cout  << "lox>" <<  v << endl;
     
     return "";
 }
 string Interpreter::VisitReturnStmt(Return* stmt)
 {
-    cout << "Enter VisitReturnStmt" << endl;
+    //cout << "Enter VisitReturnStmt" << endl;
     string val = "";
     if(stmt) val = eval(stmt->value);
 
@@ -783,18 +777,18 @@ string Interpreter::VisitReturnStmt(Return* stmt)
 }
 string Interpreter::VisitVarStmt(Var* stmt) 
 {
-    cout << "Entered VisitVarStmt " << endl;
+    //cout << "Entered VisitVarStmt " << endl;
     string v = "";
     if(stmt->init)
     {   v = eval(stmt->init);} 
-    cout << "   Entered VisitVarStmt AGAIN:" << v << endl;
+    //cout << "   Entered VisitVarStmt AGAIN:" << v << endl;
 
     if(v.find("<instance>") != string::npos)
     {
        string className = v.substr(0, v.find('<')-1);
         LoxClass* lc = env->getLoxClass(className);
         LoxInstance* li = new LoxInstance(lc);
-        cout << "   var name in VisitVarStmt:" << stmt->name.tokenLiteral() << endl;
+        //cout << "   var name in VisitVarStmt:" << stmt->name.tokenLiteral() << endl;
         env->defineLoxInstance(stmt->name.tokenLiteral(), v, li);
     }
     else{
@@ -804,7 +798,7 @@ string Interpreter::VisitVarStmt(Var* stmt)
 }
 string Interpreter::VisitBlockStmt(Block* stmt)
 {
-    cout << "Entered VisitBlockStmt " << endl;
+    //cout << "Entered VisitBlockStmt " << endl;
 
     executeBlock(stmt->stmts, new Environment(env));
     //list<Stmt*> s = stmt->stmts;
@@ -815,7 +809,7 @@ string Interpreter::VisitBlockStmt(Block* stmt)
 string Interpreter::VisitClassStmt(Class * stmt)
 {
 
-    cout << "Enter VisitClassStmt" << endl;
+    //cout << "Enter VisitClassStmt" << endl;
     env->defineLoxClass(stmt->name.tokenLiteral(), NULL);
 
     unordered_map<string, LoxFunction*> methods;
@@ -825,7 +819,7 @@ string Interpreter::VisitClassStmt(Class * stmt)
     {
         LoxFunction* lf = new LoxFunction(*i, env);
         methods.insert({(*i)->name.tokenLiteral(), lf});
-        cout << "   method: {" <<  (*i)->name.tokenLiteral() << "," << lf << "}" << endl;
+        //cout << "   method: {" <<  (*i)->name.tokenLiteral() << "," << lf << "}" << endl;
     }
 
     LoxClass* lc = new LoxClass(stmt->name.tokenLiteral(), methods);
@@ -837,20 +831,20 @@ void Interpreter::interpret(list<Stmt*> stmts)
 {
     try {
         //string value = eval(expr);
-        //cout << "Eval: " <<  value << endl;
-        cout << "Enter interpret()" << endl;
+        ////cout << "Eval: " <<  value << endl;
+        //cout << "Enter interpret()" << endl;
         list<Stmt*>::iterator i;
         int counter = 0;
         for (i = stmts.begin(); i != stmts.end(); i++)
         {
             
-            cout << "executing " << "counter=" << counter << endl;
+            //cout << "executing " << "counter=" << counter << endl;
             execute(*i);
             counter++;
         }
 
     } catch (...) {
-        cout << "Error in interpreter" << endl;
+        //cout << "Error in interpreter" << endl;
     }
 }
 void Interpreter::executeBlock(list<Stmt*> s, Environment* e)
@@ -868,7 +862,7 @@ void Interpreter::executeBlock(list<Stmt*> s, Environment* e)
         }
         catch(exception e)
         {
-            cout << "Exception in interpreter" << endl;
+            //cout << "Exception in interpreter" << endl;
             std::cerr << e.what() << '\n';
         }
     env = prev;
@@ -878,7 +872,7 @@ void Interpreter::execute(Stmt* stmt)
 {
     //cout << "   Entered execute" << endl;
     string r = stmt->Accept(this);
-    cout << "Done executing " << endl << endl; 
+    //cout << "Done executing " << endl << endl; 
 }
 string Interpreter::eval(Expr *expr)
 {

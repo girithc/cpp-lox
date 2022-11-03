@@ -1,6 +1,5 @@
 fun sayHi(first, last, middle) {
   print "Hi "+first+" "+middle+". "+last;
-  return first;
 }
 
 fun fib(n) {

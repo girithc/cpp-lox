@@ -110,38 +110,61 @@ class Lox
         }
 };
 
-    int main(int argc, char** argv)
-    {   
-        Lox lox;
-        if (argc == 2 && strcmp(argv[1],"scanner")==0)
-        {
-            cout << "Testing Scanner..." << endl; 
-            testScanner();
-        } 
-        else if (argc == 2 && strcmp(argv[1],"parser")==0)
-        {
-            //testScanner();
-            cout << "Testing Interpreter and Parser..." << endl;
-            testParserAndInterpreter();
-        } 
-        else if (argc == 2 && strcmp(argv[1],"interpreter")==0)
-        {
-            //testScanner();
-            cout << "Testing Interpreter and Parser..." << endl;
-            testParserAndInterpreter();
-        } 
-        else if (argc > 2)
-        {
-            cout << "Usage: jlox [script]";
-            cout << argc << endl;
-            exit(64);
-        } 
-        else if (argc == 2)
-        {
-            lox.runFile(argv[1]);
-        }
-        else
-        {
-            lox.runPrompt();
-        }
+int main(int argc, char** argv)
+{   
+    Lox lox;
+    if (argc == 2 && strcmp(argv[1],"scanner")==0)
+    {
+        cout << "Testing Scanner..." << endl; 
+        testScanner();
+    } 
+    else if (argc == 2 && strcmp(argv[1],"parser")==0)
+    {
+        //testScanner();
+        cout << "Testing Interpreter and Parser..." << endl;
+        testParserAndInterpreter();
+    } 
+    else if (argc == 2 && strcmp(argv[1],"interpreter")==0)
+    {
+        //testScanner();
+        cout << "Testing Interpreter and Parser..." << endl;
+        testParserAndInterpreter();
+    } 
+    else if (argc == 2 && strcmp(argv[1],"function")==0)
+    {
+        //testScanner();
+        cout << "Testing Functions..." << endl;
+        testFunctions();
+    } 
+    else if (argc == 2 && strcmp(argv[1],"class")==0)
+    {
+        //testScanner();
+        cout << "Testing Classes and Methods..." << endl;
+        testClassesAndMethods();
+    } 
+    else if (argc == 2 && strcmp(argv[1],"all")==0)
+    {
+        cout << "Testing Scanner..." << endl; 
+        testScanner();
+        cout << "Testing Interpreter and Parser..." << endl;
+        testParserAndInterpreter();
+        cout << "Testing Functions..." << endl;
+        testFunctions();
+        cout << "Testing Classes and Methods..." << endl;
+        testClassesAndMethods();
+    } 
+    else if (argc > 2)
+    {
+        cout << "Usage: jlox [script]";
+        cout << argc << endl;
+        exit(64);
+    } 
+    else if (argc == 2)
+    {
+        lox.runFile(argv[1]);
+    }
+    else
+    {
+        lox.runPrompt();
+    }
 }

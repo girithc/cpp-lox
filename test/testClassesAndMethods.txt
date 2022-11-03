@@ -1,0 +1,35 @@
+class Waffles {
+  eat() {
+    return "eating Waffles";
+  }
+make() {
+    print "making Waffles";
+ }}
+print Waffles;
+var foodItem = Waffles();
+print foodItem;
+foodItem.make();
+print foodItem.eat();
+
+
+testRegularClass()
+Test passed: (Waffles,loxClass) = (Waffles, loxClass)
+Test passed: (Waffles <instance>) = (Waffles <instance>)
+Test passed: (making Waffles) = (making Waffles)
+Test passed: (eating Waffles) = (eating Waffles)
+
+
+
+class Memory {
+  getLocation() {
+    fun localMemory() {
+      print this;
+    }
+    return localMemory;
+ }}
+var location = Memory().getLocation();
+location();
+
+
+testClassThis()
+Test passed: (0x142e0b100) = (0x This (ClassMemory))

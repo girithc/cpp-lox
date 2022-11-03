@@ -1,0 +1,30 @@
+
+class Waffles {
+  eat() {
+    return "eating Waffles";
+  }
+  make() {
+    print "making Waffles";
+  }
+}
+
+print Waffles;
+var foodItem = Waffles();
+print foodItem;
+foodItem.make();
+print foodItem.eat();
+
+
+
+
+class Thing {
+  getCallback() {
+    fun localFunction() {
+      print this;
+    }
+    return localFunction;
+  }
+}
+
+var callback = Thing().getCallback();
+callback();
